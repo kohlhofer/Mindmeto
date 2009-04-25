@@ -238,7 +238,18 @@
 								// Send a successful DM!
 								$reminderId = $db->fetchLastInsertId();
 								if( date('Hi', $reminderData['epoch']) == '0000' ) {
-									$reminderData['epoch'] = mktime(8, date("i", $reminderData['epoch']), date("s", $reminderData['epoch']), date("m", $reminderData['epoch']), date("d", $reminderData['epoch']), date("Y", $reminderData['epoch']));
+									
+									// This reminder is set to occur at a default time, so poll the database to find out when!
+									$defaultTime = DEFAULT_REMINDER_TIME;
+									$result = $db->query("SELECT user_default_time FROM ".DB_TBL_USERS." WHERE user_id='".$db->sanitize($userId)."'");
+								
+									if( $result->numRows() > 0 ) {
+										$results = $result->getRow();
+										$defaultTime = $results['user_default_time'];
+									}
+									
+									$reminderData['epoch'] = mktime($defaultTime, date("i", $reminderData['epoch']), date("s", $reminderData['epoch']), date("m", $reminderData['epoch']), date("d", $reminderData['epoch']), date("Y", $reminderData['epoch']));
+									
 								}
 								$this->sendDM( $userId, "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']). " | See other reminders at http://mindmeto.com/list" );
 						
