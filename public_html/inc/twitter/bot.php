@@ -97,6 +97,23 @@
 			
 		}
 		
+		// Delete a Direct Message. Returns true on success
+		function deleteDM( $id ) {
+			
+			try {
+				
+				$this->twitterOAuth->OAuthRequest('https://twitter.com/direct_messages/destroy/'.$id.'.json', array(), 'POST');
+				
+			} catch ( Exception $e ) {
+				
+				return false;
+				
+			}
+			
+			return true;
+			
+		}
+		
 		function parseCommand( $userId, $command ) {
 			
 			global $db;
@@ -258,6 +275,9 @@
 								$this->sendDM( $userId, "Whoops! There was a problem setting your reminder. If this problem persists, please get in touch!" );
 								
 							}
+							
+							// Now we delete the DM to save on space
+							if( TWITTER_DELETE_DMS ) $this->deleteDM( $update->id );
 					
 						} else {
 					

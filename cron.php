@@ -1,6 +1,6 @@
 <?php
 
-	define('MINDMETO_ROOT', 'public_html/experiments/mindmeto/');
+	define('MINDMETO_ROOT', 'public_html/');
 
 	require(MINDMETO_ROOT.'inc/db.php');
 	require(MINDMETO_ROOT.'inc/twitter/bot.php');

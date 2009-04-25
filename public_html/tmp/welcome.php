@@ -39,7 +39,7 @@
                     <h2>Configure mindmeto with these commands:</h2>
                         <ul>
                             <li>dm mindmeto timezone GMT+3 <span class="note">Sets your time zone to GMT+3</span></li>
-                            <li>dm mindmeto default time 8am <span class="note">Reminders without a specific time will be sent at 8am</span></li>
+                            <li>dm mindmeto default time 8 <span class="note">Reminders without a specific time will be sent at 8am (use 24 hour values)</span></li>
                             <li>dm mindmeto list reminders <span class="note">Will send you a link to your reminders</span></li>
                             <li>dm mindmeto cancel #123 <span class="note">#123 is the id of a reminder as stated in the confirmation</span></li>
                             <li>dm mindmeto confirmations ON <span class="note">New reminders will be confirmed with a direct message</span></li>
