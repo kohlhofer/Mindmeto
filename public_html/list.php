@@ -40,7 +40,7 @@ function handleTwitterAuthentication( $state ) {
 			$userDetailsJSON = json_decode( $userDetails );
 
 			if( !$session->createSession( $userDetailsJSON->id, $tok['oauth_token'], $tok['oauth_token_secret'] ) ) {
-				
+
 				header('Location: logout.php');
 	
 			}
@@ -54,7 +54,7 @@ function handleTwitterAuthentication( $state ) {
 	    		$tok = $to->getRequestToken();
 	
 			} catch( Exception $e ) {
-				
+
 				header('Location: logout.php');
 				
 			}
@@ -88,7 +88,7 @@ if( $session->loggedIn ) {
 		$userDetails = $to->OAuthRequest('https://twitter.com/account/verify_credentials.json', array(), 'GET');
 			
 	} catch ( Exception $e ) {
-			
+
 		header('Location: logout.php');
 			
 	}

@@ -15,6 +15,7 @@
 		}
 		
 		// Checks to see if we're storing basic user details in the database. If not, we add some!
+		/*
 		function guaranteeExistenceOfUserDetails( $userId ) {
 		
 			global $db;
@@ -26,7 +27,7 @@
 				
 			}
 			
-		}
+		}*/
 		function getUserSetting( $userId, $setting ) {
 			
 			global $db;
@@ -64,13 +65,6 @@
 
 			// Remove reminders older than a day
 			$result = $db->query("SELECT reminder_id FROM ".DB_TBL_REMINDERS." WHERE reminder_timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)");
-
-			/*$result = $db->query("SELECT r.*, u.user_timezone, u.user_default_time, u.user_id ".
-								"FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE ".
-								"r.reminder_user_id = u.user_id AND ".
-								"(( DATE_FORMAT(r.reminder_timestamp, '%H:%i') != '00:00' AND DATE_ADD(CONVERT_TZ(NOW(), '+00:00', u.user_timezone), INTERVAL ".REMINDER_PERIOD." MINUTE) > r.reminder_timestamp ) ".
-								"OR ( DATE_FORMAT(r.reminder_timestamp, '%H:%i') = '00:00' AND DATE(r.reminder_timestamp) <= DATE(CONVERT_TZ(NOW(), '+00:00', u.user_timezone)) AND DATE_FORMAT(CONVERT_TZ(NOW(), '+00:00', u.user_timezone), '%H:%i') >= u.user_default_time+':00' )) ".
-								"ORDER BY CONVERT_TZ(r.reminder_timestamp, '+00:00', u.user_timezone) ASC");*/
 								
 			$sql = "SELECT r.* , u.user_timezone, u.user_default_time, u.user_id ".
 				 "FROM ".DB_TBL_REMINDERS." AS r ".
@@ -78,7 +72,7 @@
 				 "WHERE (".
 					"(".
 						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' ".
-						"AND DATE_ADD( CONVERT_TZ( NOW(), '+00:00', IFNULL(u.user_timezone, '+00:00') ), INTERVAL 1 MINUTE ) > r.reminder_timestamp ".
+						"AND DATE_ADD( CONVERT_TZ( NOW(), '+00:00', IFNULL(u.user_timezone, '+00:00') ), INTERVAL ".REMINDER_PERIOD." MINUTE ) > r.reminder_timestamp ".
 					")".
 				") OR (".
 					"(".
@@ -426,7 +420,6 @@
 				
 				if( $removeEmail === true ) {
 					
-					$this->guaranteeExistenceOfUserDetails( trim($rawHeader['X-Twittersenderid']) );
 					@imap_delete($imapConnection, $i); 
 					
 				}

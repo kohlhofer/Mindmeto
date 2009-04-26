@@ -17,19 +17,22 @@
 		
 			global $db; 
 
-      		if( isset( $_COOKIE['userId'] ) && isset( $_COOKIE['userSessionId'] ) ) {
+      		if( isset( $_COOKIE['userId'] ) && strlen( $_COOKIE['userId'] ) > 0 && 
+				isset( $_COOKIE['userSessionId'] ) && strlen( $_COOKIE['userSessionId'] ) > 0 ) {
 
          		$this->userId = $_SESSION['userId'] = $_COOKIE['userId'];
          		$this->userSessionId = $_SESSION['userSessionId'] = $_COOKIE['userSessionId'];
 
       		}
 
-      		if( isset( $_SESSION['userId'] ) && isset( $_SESSION['userSessionId'] ) ) {
-      	
+      		if( isset( $_SESSION['userId'] ) && strlen( $_SESSION['userSessionId'] ) > 0 &&
+ 				isset( $_SESSION['userSessionId'] ) && strlen( $_SESSION['userSessionId'] ) > 0 ) {
+
          		if( !$db->confirmSessionId( $_SESSION['userId'], $_SESSION['userSessionId'] ) ) {
 
             		unset($_SESSION['userId']);
             		unset($_SESSION['userSessionId']);
+
             		return false;
 
          		}
@@ -54,17 +57,17 @@
 				$this->userId = $_SESSION['userId'] = $userId;
       			$this->userSessionId = $_SESSION['userSessionId'] = $this->generateRandomID();
 			
-				$result = $db->query('SELECT user_id FROM '.DB_TBL_USERS.' WHERE user_id="'.$db->sanitize($userId).'"');
+				$result = $db->query("SELECT user_id FROM ".DB_TBL_USERS." WHERE user_id='".$db->sanitize($userId)."'");
 				if( $result->numRows() > 0 ) {
 			
 					// This is an existing user, so we update their details
 					$db->query("UPDATE ".DB_TBL_USERS." SET user_session_id='".$db->sanitize($this->userSessionId)."', user_oauth_token='".$db->sanitize($token)."', user_oauth_token_secret='".$db->sanitize($secret)."' WHERE user_id='".$db->sanitize($userId)."'");
-			
+
 				} else {
 			
 					// This is a new user
 					$db->query("INSERT INTO ".DB_TBL_USERS." (user_id, user_oauth_token, user_oauth_token_secret, user_session_id) VALUES ('".$db->sanitize($userId)."', '".$db->sanitize($token)."', '".$db->sanitize($secret)."', '".$db->sanitize($this->userSessionId)."')");
-			
+
 				}
 				
 				setcookie( "userId", $this->userId, time()+COOKIE_EXPIRE, COOKIE_PATH );
@@ -75,15 +78,14 @@
 				return $this->loggedIn;
          	
          	}
-         	
          	return false;
 			
 		}
 		
 		function logout(){
 
-      		if( isset( $_COOKIE['userId'] ) ) setcookie( "userId", "", time()-COOKIE_EXPIRE, COOKIE_PATH );
-         	if( isset( $_COOKIE['userSessionId'] ) ) setcookie( "userSessionId", "", time()-COOKIE_EXPIRE, COOKIE_PATH );
+      		setcookie( "userId", null, time()-COOKIE_EXPIRE );
+     		setcookie( "userSessionId", null, time()-COOKIE_EXPIRE );
 
       		unset( $_SESSION['userId'] );
       		unset( $_SESSION['userSessionId'] );
