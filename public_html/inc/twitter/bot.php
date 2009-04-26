@@ -14,6 +14,19 @@
 			
 		}
 		
+		// Checks to see if we're storing basic user details in the database. If not, we add some!
+		function guaranteeExistenceOfUserDetails( $userId ) {
+		
+			global $db;
+			
+			$result = $db->query("SELECT user_id FROM ".DB_TBL_USERS." WHERE user_id='".$db->sanitize($userId)."'");
+			if( $result->numRows() == 0 ) {
+				
+				$db->query("INSERT INTO ".DB_TBL_USERS." (user_id) VALUES ('".$db->sanitize($userId)."')");
+				
+			}
+			
+		}
 		function getUserSetting( $userId, $setting ) {
 			
 			global $db;
@@ -52,17 +65,36 @@
 			// Remove reminders older than a day
 			$result = $db->query("SELECT reminder_id FROM ".DB_TBL_REMINDERS." WHERE reminder_timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)");
 
-			$result = $db->query("SELECT r.*, u.user_timezone, u.user_default_time, u.user_id ".
+			/*$result = $db->query("SELECT r.*, u.user_timezone, u.user_default_time, u.user_id ".
 								"FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE ".
 								"r.reminder_user_id = u.user_id AND ".
 								"(( DATE_FORMAT(r.reminder_timestamp, '%H:%i') != '00:00' AND DATE_ADD(CONVERT_TZ(NOW(), '+00:00', u.user_timezone), INTERVAL ".REMINDER_PERIOD." MINUTE) > r.reminder_timestamp ) ".
 								"OR ( DATE_FORMAT(r.reminder_timestamp, '%H:%i') = '00:00' AND DATE(r.reminder_timestamp) <= DATE(CONVERT_TZ(NOW(), '+00:00', u.user_timezone)) AND DATE_FORMAT(CONVERT_TZ(NOW(), '+00:00', u.user_timezone), '%H:%i') >= u.user_default_time+':00' )) ".
-								"ORDER BY CONVERT_TZ(r.reminder_timestamp, '+00:00', u.user_timezone) ASC");
+								"ORDER BY CONVERT_TZ(r.reminder_timestamp, '+00:00', u.user_timezone) ASC");*/
+								
+			$sql = "SELECT r.* , u.user_timezone, u.user_default_time, u.user_id ".
+				 "FROM ".DB_TBL_REMINDERS." AS r ".
+				 "LEFT JOIN ".DB_TBL_USERS." AS u ON u.user_id = r.reminder_user_id ".
+				 "WHERE (".
+					"(".
+						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' ".
+						"AND DATE_ADD( CONVERT_TZ( NOW(), '+00:00', IFNULL(u.user_timezone, '+00:00') ), INTERVAL 1 MINUTE ) > r.reminder_timestamp ".
+					")".
+				") OR (".
+					"(".
+						"DATE_FORMAT( r.reminder_timestamp,  '%H:%i' ) = '00:00' ".
+						"AND DATE( r.reminder_timestamp ) <= DATE( CONVERT_TZ( NOW(), '+00:00', IFNULL( u.user_timezone, '+00:00' ) ) ) ".
+						"AND DATE_FORMAT( CONVERT_TZ( NOW() , '+00:00', IFNULL(u.user_timezone, '+00:00') ), '%H:%i' ) >= IFNULL( u.user_default_time, '8' ) + ':00' ".
+					")".
+				")".
+				"ORDER BY CONVERT_TZ( r.reminder_timestamp, '+00:00', IFNULL(u.user_timezone, '+00:00') ) ASC";
+
+			$result = $db->query( trim($sql) );
 
 			while( $reminder = $result->getRow() ) {
 
-				$reminderText = $reminder['reminder_text'].' | See all reminders: http://mindmeto.com/list';
-				if( $this->sendDM( $reminder['user_id'], $reminderText, TWITTER_DM_REMINDER ) ) {
+				$reminderText = $reminder['reminder_text'].' | See all reminders: http://mindmeto.com/list.php';
+				if( $this->sendDM( $reminder['reminder_user_id'], $reminderText, TWITTER_DM_REMINDER ) ) {
 					
 					$db->query("DELETE FROM ".DB_TBL_REMINDERS." WHERE reminder_id='".$db->sanitize($reminder['reminder_id'])."'");
 					
@@ -75,8 +107,9 @@
 		// Send a DM from the MindMeTo bot
 		function sendDM( $id, $message, $type=TWITTER_DM_CONFIRMATION ) {
 		
-			if( ( $type == TWITTER_DM_CONFIRMATION && $this->getUserSetting( $id, 'user_allow_confirmations' ) ) || 
-				( $type == TWITTER_DM_REMINDER && $this->getUserSetting( $id, 'user_allow_reminders' ) ) ) {
+			if( $id != TWITTER_ID &&
+				(( $type == TWITTER_DM_CONFIRMATION && $this->getUserSetting( $id, 'user_allow_confirmations' ) !== 0 ) || 
+				( $type == TWITTER_DM_REMINDER && $this->getUserSetting( $id, 'user_allow_reminders' ) !== 0 )) ) {
 		
 				try {
 				
@@ -144,20 +177,20 @@
 				
 				$defaultTime = trim(substr($command->text, 13, strlen($command->text)));
 				
-				if( is_numeric( $defaultTime ) ) {
+				if( is_numeric( $defaultTime ) && $defaultTime >= 0 && $defaultTime <= 23 ) {
 					
 					$this->updateUserSettings( $userId, 'user_default_time', $defaultTime );
 					$this->sendDM( $userId, "All done! Your default reminder time has been set to ".$defaultTime.".");
 					
 				} else {
 					
-					$this->sendDM( $userId, "Whoops! You must provide a numeric value to set a default reminder time.");
+					$this->sendDM( $userId, "Whoops! You must provide a numeric value (0 to 23) to set a default reminder time.");
 					
 				}
 
 			} else if( $command->text == "list reminders" ) {
 				
-				$this->sendDM( $userId, "Visit http://mindmeto.com/list to view your reminders.");
+				$this->sendDM( $userId, "Visit http://mindmeto.com/list.php to view your reminders.");
 
 			} else if( substr( $command->text, 0, 8) == "cancel #" ) {
 				
@@ -178,7 +211,7 @@
 				
 				} else {
 					
-					$this->sendDM( $userId, "You must provide a numeric ID to delete a reminder. If you need to check a reminders ID, visit http://mindmeto.com/list");
+					$this->sendDM( $userId, "You must provide a numeric ID to delete a reminder. If you need to check a reminders ID, visit http://mindmeto.com/list.php");
 					
 				}
 
@@ -268,7 +301,7 @@
 									$reminderData['epoch'] = mktime($defaultTime, date("i", $reminderData['epoch']), date("s", $reminderData['epoch']), date("m", $reminderData['epoch']), date("d", $reminderData['epoch']), date("Y", $reminderData['epoch']));
 									
 								}
-								$this->sendDM( $userId, "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']). " | See other reminders at http://mindmeto.com/list" );
+								$this->sendDM( $userId, "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']). " | See other reminders at http://mindmeto.com/list.php" );
 						
 							} else {
 								
@@ -277,7 +310,7 @@
 							}
 							
 							// Now we delete the DM to save on space
-							if( TWITTER_DELETE_DMS ) $this->deleteDM( $update->id );
+							if( TWITTER_DELETE_DMS ) $this->deleteDM( trim($update->id) );
 					
 						} else {
 					
@@ -393,6 +426,7 @@
 				
 				if( $removeEmail === true ) {
 					
+					$this->guaranteeExistenceOfUserDetails( trim($rawHeader['X-Twittersenderid']) );
 					@imap_delete($imapConnection, $i); 
 					
 				}
