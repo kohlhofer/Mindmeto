@@ -16,6 +16,10 @@
 			echo '</ul>';
 	
 		endif; ?>
+		User timezone: GMT<?=substr( $session->userDetails['user_timezone'], 0, stripos($session->userDetails['user_timezone'], ":"))?><br />
+		Default time: <?=$session->userDetails['user_default_time']?><br />
+		<?php echo ( $session->userDetails['user_allow_reminders'] ) ? "Reminders are ON" : "Reminders are OFF"; ?><br />
+		<?php echo ( $session->userDetails['user_allow_confirmations'] ) ? "Confirmations are ON" : "Confirmations are OFF"; ?>
     </div>
     <p><a href="<?=BASE_URL?>logout.php">Logout</a></p>
 </div>

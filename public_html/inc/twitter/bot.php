@@ -1,6 +1,7 @@
 <?php
 
 	require_once(MINDMETO_ROOT.'inc/oauth/twitterOAuth.php');
+	require_once(MINDMETO_ROOT.'inc/twitter/helper.php');
 	require_once(MINDMETO_ROOT.'inc/twitter/options.php');
 	require_once(MINDMETO_ROOT.'inc/reminder.php');
 
@@ -13,21 +14,7 @@
 			$this->twitterOAuth = new TwitterOAuth(OAUTH_CONSUMER_KEY, OAUTH_CONSUMER_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET );
 			
 		}
-		
-		// Checks to see if we're storing basic user details in the database. If not, we add some!
-		/*
-		function guaranteeExistenceOfUserDetails( $userId ) {
-		
-			global $db;
-			
-			$result = $db->query("SELECT user_id FROM ".DB_TBL_USERS." WHERE user_id='".$db->sanitize($userId)."'");
-			if( $result->numRows() == 0 ) {
-				
-				$db->query("INSERT INTO ".DB_TBL_USERS." (user_id) VALUES ('".$db->sanitize($userId)."')");
-				
-			}
-			
-		}*/
+
 		function getUserSetting( $userId, $setting ) {
 			
 			global $db;
@@ -146,49 +133,49 @@
 			global $db;
 			
 			$commandParsed = true;
-			$command->text = trim(strtolower($command->text));
+			$command = trim(strtolower($command));
 			
-			if( substr( $command->text, 0, 12) == "timezone gmt" ) {	
+			if( substr( $command, 0, 12) == "timezone gmt" ) {	
 				
-				$timezone = trim(substr( $command->text, 12, strlen($command->text) ));
+				$timezone = trim(substr( $command, 12, strlen($command) ));
 				
-				if( trim($command->text) == "timezone gmt" ) $timezone = 0;
+				if( trim($command) == "timezone gmt" ) $timezone = 0;
 				if( is_numeric( $timezone ) ) {
 					
 					$dmTimezone = ($timezone >= 0) ? '+'.$timezone : $timezone;
 					$finalTimezone = ($timezone >= 0) ? '+'.$timezone.':00' : $timezone.':00';
 				
 					$this->updateUserSettings( $userId, 'user_timezone', $finalTimezone );
-					$this->sendDM( $userId, 'All done! Your timezone has been set to GMT'.$dmTimezone.'.' );
+					return("All done! Your timezone has been set to GMT".$dmTimezone."." );
 					
 				} else {
 					
-					$this->sendDM( $userId, 'Whoops! You must provide a numeric value (number of hours relative to GMT) to set a timezone.' );
+					return("Whoops! You must provide a numeric value (number of hours relative to GMT) to set a timezone." );
 					
 				}
 
-			} else if( substr( $command->text, 0, 12) == "default time" ) {
+			} else if( substr( $command, 0, 12) == "default time" ) {
 				
-				$defaultTime = trim(substr($command->text, 13, strlen($command->text)));
+				$defaultTime = trim(substr($command, 13, strlen($command)));
 				
 				if( is_numeric( $defaultTime ) && $defaultTime >= 0 && $defaultTime <= 23 ) {
 					
 					$this->updateUserSettings( $userId, 'user_default_time', $defaultTime );
-					$this->sendDM( $userId, "All done! Your default reminder time has been set to ".$defaultTime.".");
+					return("All done! Your default reminder time has been set to ".$defaultTime.".");
 					
 				} else {
 					
-					$this->sendDM( $userId, "Whoops! You must provide a numeric value (0 to 23) to set a default reminder time.");
+					return("Whoops! You must provide a numeric value (0 to 23) to set a default reminder time.");
 					
 				}
 
-			} else if( $command->text == "list reminders" ) {
+			} else if( $command == "list reminders" ) {
 				
-				$this->sendDM( $userId, "Visit http://mindmeto.com/list.php to view your reminders.");
+				return("Visit http://mindmeto.com/list.php to view your reminders.");
 
-			} else if( substr( $command->text, 0, 8) == "cancel #" ) {
+			} else if( substr( $command, 0, 8) == "cancel #" ) {
 				
-				$id = trim(substr( $command->text, 8, strlen( $command->text )));
+				$id = trim(substr( $command, 8, strlen( $command )));
 				
 				if( is_numeric( $id ) ) {
 				
@@ -199,35 +186,35 @@
 				
 					if( $results['num_reminders_deleted'] > 0 ) {
 				
-						$this->sendDM( $userId, "All done! The reminder with ID #'.$id.' has been removed." );
+						return("All done! The reminder with ID #'.$id.' has been removed.");
 				
 					}
 				
 				} else {
 					
-					$this->sendDM( $userId, "You must provide a numeric ID to delete a reminder. If you need to check a reminders ID, visit http://mindmeto.com/list.php");
+					return("You must provide a numeric ID to delete a reminder. If you need to check a reminders ID, visit http://mindmeto.com/list.php");
 					
 				}
 
-			} else if( $command->text == "confirmations on" ) {
+			} else if( $command == "confirmations on" ) {
 				
 				$this->updateUserSettings( $userId, 'user_allow_confirmations', 1 );
-				$this->sendDM( $userId, 'All done! You have now turned Direct Message confirmations on.' );
+				return("All done! You have now turned Direct Message confirmations on.");
 				
-			} else if( $command->text == "confirmations off" ) {
+			} else if( $command == "confirmations off" ) {
 				
 				$this->updateUserSettings( $userId, 'user_allow_confirmations', 0 );
-				$this->sendDM( $userId, 'All done! You have now turned Direct Message confirmations off (this will be your last one).' );
+				return("All done! You have now turned Direct Message confirmations off (this will be your last one).");
 
-			} else if( $command->text == "reminders on" ) {
+			} else if( $command == "reminders on" ) {
 				
 				$this->updateUserSettings( $userId, 'user_allow_reminders', 1 );
-				$this->sendDM( $userId, 'All done! You have now turned Direct Message reminders on.' );
+				return("All done! You have now turned Direct Message reminders on.");
 				
-			} else if( $command->text == "reminders off" ) {
+			} else if( $command == "reminders off" ) {
 				
 				$this->updateUserSettings( $userId, 'user_allow_reminders', 0 );
-				$this->sendDM( $userId, 'All done! You have now turned Direct Message reminders off' );
+				return("All done! You have now turned Direct Message reminders off");
 
 			} else {
 				
@@ -260,9 +247,13 @@
 					}
 				
 					$userId = ($type == "dm") ? trim($update->sender_id) : trim($update->user->id);
+					if( $type == "dm" ) $commandResponse = $this->parseCommand( $userId, $update->text );
 
 					// Handle configuration commands
-					if( $type == "dm" && $this->parseCommand( $userId, $update ) ) {
+					if( $type == "dm" && $commandResponse !== false ) {
+						
+						$this->sendDM( $userId, $commandResponse );
+						
 					} else {
 				
 						// Get rid of the @mindmeto's in messages
@@ -281,20 +272,9 @@
 						
 								// Send a successful DM!
 								$reminderId = $db->fetchLastInsertId();
-								if( date('Hi', $reminderData['epoch']) == '0000' ) {
-									
-									// This reminder is set to occur at a default time, so poll the database to find out when!
-									$defaultTime = DEFAULT_REMINDER_TIME;
-									$result = $db->query("SELECT user_default_time FROM ".DB_TBL_USERS." WHERE user_id='".$db->sanitize($userId)."'");
-								
-									if( $result->numRows() > 0 ) {
-										$results = $result->getRow();
-										$defaultTime = $results['user_default_time'];
-									}
-									
-									$reminderData['epoch'] = mktime($defaultTime, date("i", $reminderData['epoch']), date("s", $reminderData['epoch']), date("m", $reminderData['epoch']), date("d", $reminderData['epoch']), date("Y", $reminderData['epoch']));
-									
-								}
+							
+								$convertedTimestamp = convertDefaultTime( $userId, $reminderData['epoch'] );
+								$reminderData['epoch'] = ( $convertedTimestamp !== false ) ? $convertedTimestamp : $reminderData['epoch'];
 								$this->sendDM( $userId, "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']). " | See other reminders at http://mindmeto.com/list.php" );
 						
 							} else {
