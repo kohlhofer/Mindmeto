@@ -12,6 +12,16 @@ $oauthSessionToken = $_SESSION['oauthRequestToken'];
 $oauthToken = $_REQUEST['oauthToken'];
 $section = $_REQUEST['section'];
 
+function debugDump() {
+
+	echo '<pre>';
+		print_r($_SESSION);
+		print_r($_COOKIE);
+		var_dump($session);
+	echo '</pre>';
+
+}
+
 function handleTwitterAuthentication( $state ) {
 
 	global $session;
@@ -24,23 +34,24 @@ function handleTwitterAuthentication( $state ) {
 	    case 'returned':
 
 			$userDetailsJSON = NULL;
-		
+			
 			try {
-								
-		      	$to = new TwitterOAuth(OAUTH_CONSUMER_KEY, OAUTH_CONSUMER_SECRET, $_SESSION['oauthRequestToken'], $_SESSION['oauthRequestTokenSecret']);
-		      	$tok = $to->getAccessToken();
+				
+				$to = new TwitterOAuth(OAUTH_CONSUMER_KEY, OAUTH_CONSUMER_SECRET, $_SESSION['oauthRequestToken'], $_SESSION['oauthRequestTokenSecret']);
+	      		$tok = $to->getAccessToken();	
 				$userDetails = $to->OAuthRequest('https://twitter.com/account/verify_credentials.json', array(), 'GET');
 					
 			} catch ( Exception $e ) {
-				
-				header('Location: logout.php');
+
+				header("Location: logout.php");
 					
 			}
 				
 			$userDetailsJSON = json_decode( $userDetails );
 
-			if( !$session->createSession( $userDetailsJSON->id, $tok['oauth_token'], $tok['oauth_token_secret'] ) ) {
-
+			$session->loggedIn = $session->createSession( $userDetailsJSON->id, $tok['oauth_token'], $tok['oauth_token_secret'] );
+			if( !$session->loggedIn ) {
+				
 				header('Location: logout.php');
 	
 			}
@@ -100,6 +111,6 @@ if( $session->loggedIn ) {
 
 	include( 'tmp/account/reminders.php' );
 	
-}
+} 
 
 ?>

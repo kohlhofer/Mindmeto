@@ -49,7 +49,7 @@
 		function createSession( $userId, $token, $secret ) {
 		
 			global $db;
-			
+
 			if( strlen($userId) > 0 && strlen($token) > 0 && strlen($secret) > 0 ) {
 
 				$userId = trim( $userId );
@@ -69,23 +69,23 @@
 					$db->query("INSERT INTO ".DB_TBL_USERS." (user_id, user_oauth_token, user_oauth_token_secret, user_session_id) VALUES ('".$db->sanitize($userId)."', '".$db->sanitize($token)."', '".$db->sanitize($secret)."', '".$db->sanitize($this->userSessionId)."')");
 
 				}
-				
-				setcookie( "userId", $this->userId, time()+COOKIE_EXPIRE, COOKIE_PATH );
-         		setcookie( "userSessionId", $this->userSessionId, time()+COOKIE_EXPIRE, COOKIE_PATH );
 
-				$this->loggedIn = $this->verifySession();
-				
-				return $this->loggedIn;
+				setcookie( "userId", $this->userId, time()+COOKIE_EXPIRE, COOKIE_PATH, ".mindmeto.com" );
+         		setcookie( "userSessionId", $this->userSessionId, time()+COOKIE_EXPIRE, COOKIE_PATH, ".mindmeto.com" );
+				$this->userDetails = $db->fetchUserDetails( $this->userId );
+
+				return true;
          	
          	}
+
          	return false;
 			
 		}
 		
 		function logout(){
 
-      		setcookie( "userId", null, time()-COOKIE_EXPIRE );
-     		setcookie( "userSessionId", null, time()-COOKIE_EXPIRE );
+      		setcookie( "userId", NULL, time()-COOKIE_EXPIRE, COOKIE_PATH, ".mindmeto.com" );
+     		setcookie( "userSessionId", NULL, time()-COOKIE_EXPIRE, COOKIE_PATH, ".mindmeto.com" );
 
       		unset( $_SESSION['userId'] );
       		unset( $_SESSION['userSessionId'] );

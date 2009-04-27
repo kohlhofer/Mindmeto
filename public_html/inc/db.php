@@ -73,7 +73,9 @@
 		function confirmSessionId( $userId, $sessionId ) {
 
 			$result = $this->query( "SELECT user_id FROM ".DB_TBL_USERS." WHERE LENGTH(user_oauth_token) > 0 AND LENGTH(user_oauth_token_secret) > 0 AND user_id='".$this->sanitize($userId)."' AND user_session_id='".$this->sanitize($sessionId)."'" );
-			if( $result->numRows() > 0 ) return true;
+			if( $result->numRows() > 0 ) {
+				return true;
+			}
 			
 			return false;
 			
