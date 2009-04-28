@@ -7,10 +7,11 @@
 
 	class TwitterBot { 
 		
-		var $twitterOAuth;
+		var $twitterOAuth, $reminder;
 		
 		function TwitterBot() {
 			
+			$this->reminder = new Reminder();
 			$this->twitterOAuth = new TwitterOAuth(OAUTH_CONSUMER_KEY, OAUTH_CONSUMER_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET );
 			
 		}
@@ -142,11 +143,11 @@
 				if( trim($command) == "timezone gmt" ) $timezone = 0;
 				if( is_numeric( $timezone ) ) {
 					
-					$dmTimezone = ($timezone >= 0) ? '+'.$timezone : $timezone;
-					$finalTimezone = ($timezone >= 0) ? '+'.$timezone.':00' : $timezone.':00';
+					$dmTimezone = (intval($timezone) >= 0) ? '+'.$timezone : $timezone;
+					$finalTimezone = (intval($timezone) >= 0) ? '+'.$timezone.':00' : $timezone.':00';
 				
 					$this->updateUserSettings( $userId, 'user_timezone', $finalTimezone );
-					return("All done! Your timezone has been set to GMT".$dmTimezone."." );
+					return("All done! Your timezone has been set to GMT$dmTimezone" );
 					
 				} else {
 					
@@ -186,8 +187,12 @@
 				
 					if( $results['num_reminders_deleted'] > 0 ) {
 				
-						return("All done! The reminder with ID #'.$id.' has been removed.");
+						return("All done! The reminder with ID #$id has been removed.");
 				
+					} else {
+						
+						return("There was a problem deleting the reminder you specified.");
+						
 					}
 				
 				} else {
@@ -225,12 +230,50 @@
 			return $commandParsed;
 			
 		}
+		function parseReminder( $command, $userId, $twitterId ) {
+			
+			global $db;
+			
+			$reminderData = $this->reminder->parse( $command );
+	
+			if( is_array($reminderData) ) {
+		
+				// Make sure the user isn't setting a reminder in the past
+				$reminderSetInFuture = ( $reminderData['epoch'] > time() ) ? true : false;
+		
+				if( $reminderSetInFuture && $this->reminder->add( $userId, $twitterId, $reminderData['reminder'], $reminderData['epoch'] ) ) {
+			
+					// Send a successful DM!
+					$reminderId = $db->fetchLastInsertId();
+				
+					$convertedTimestamp = convertDefaultTime( $userId, $reminderData['epoch'] );
+					$reminderData['epoch'] = ( $convertedTimestamp !== false ) ? $convertedTimestamp : $reminderData['epoch'];
+					return( "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']). " | See other reminders at http://mindmeto.com/list.php" );
+			
+				} else {
+					
+					return( "Whoops! There was a problem setting your reminder. If this problem persists, please get in touch!" );
+					
+				}
+				
+				// Now we delete the DM to save on space
+				if( TWITTER_DELETE_DMS && $twitterId > -1 ) $this->deleteDM( trim( $twitterId ) );
+		
+			} else {
+		
+				// The reminder was not recognized. Send the user a regretful DM
+				return ( "Whoops! I do not understand the command/reminder you just sent: ".$command );
+		
+			}
+			
+			return false;
+			
+		}
 		
 		function parseTweets( $type, $updates, $currentLastId ) {
 			
 			global $db;
 			
-			$reminder = new Reminder();
 			$firstReminder = true;
 			$newLastId = $currentLastId;
 			
@@ -261,37 +304,8 @@
 							$update->text = trim(substr($update->text, strripos($update->text, "@mindmeto")+10, strlen($update->text) ));
 						}
 	
-						$reminderData = $reminder->parse( $update->text );
-				
-						if( is_array($reminderData) ) {
-					
-							// Make sure the user isn't setting a reminder in the past
-							$reminderSetInFuture = ( $reminderData['epoch'] > time() ) ? true : false;
-					
-							if( $reminderSetInFuture && $reminder->add( $userId, $update->id, $reminderData['reminder'], $reminderData['epoch'], $reminderData['recurring'] ) ) {
-						
-								// Send a successful DM!
-								$reminderId = $db->fetchLastInsertId();
-							
-								$convertedTimestamp = convertDefaultTime( $userId, $reminderData['epoch'] );
-								$reminderData['epoch'] = ( $convertedTimestamp !== false ) ? $convertedTimestamp : $reminderData['epoch'];
-								$this->sendDM( $userId, "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']). " | See other reminders at http://mindmeto.com/list.php" );
-						
-							} else {
-								
-								$this->sendDM( $userId, "Whoops! There was a problem setting your reminder. If this problem persists, please get in touch!" );
-								
-							}
-							
-							// Now we delete the DM to save on space
-							if( TWITTER_DELETE_DMS ) $this->deleteDM( trim($update->id) );
-					
-						} else {
-					
-							// The reminder was not recognized. Send the user a regretful DM
-							$this->sendDM( $userId, "Whoops! I do not understand the command/reminder you just sent: ".$update->text );
-					
-						}
+						$reminderResult = $this->parseReminder( $update->text, $userId, $update->id );
+						if( $reminderResult !== false ) $this->sendDM( $userId, $reminderResult );
 						
 					}
 			
@@ -302,6 +316,7 @@
 			return $newLastId;
 			
 		}
+		
 		function collectNewReplies() {
 
 			$options = new OptionsHandler();

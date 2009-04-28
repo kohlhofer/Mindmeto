@@ -12,17 +12,15 @@
 			
 		}
 	    
-		
-		function add( $userId, $tweetId, $text, $timestamp, $recurring ) {
+		// Passing a tweetId of value -1 means we're adding the reminder via the web interface
+		function add( $userId, $tweetId, $text, $timestamp ) {
 			
 			global $db;
-
-			$recurring = ($recurring == true) ? 1 : 0;
 			
-			$result = $db->query("SELECT reminder_id FROM ".DB_TBL_REMINDERS." WHERE reminder_tweet_id='".$db->sanitize($tweetId)."'");
-			if( $result->numRows() < 1 ) {
+			if( $tweetId > -1 ) $result = $db->query("SELECT reminder_id FROM ".DB_TBL_REMINDERS." WHERE reminder_tweet_id='".$db->sanitize($tweetId)."'");
+			if( $tweetId == -1 || $result->numRows() < 1 ) {
 			
-				$db->query("INSERT INTO ".DB_TBL_REMINDERS." (reminder_id, reminder_user_id, reminder_tweet_id, reminder_text, reminder_timestamp, reminder_added_timestamp, reminder_recurring) VALUES ('', '".$db->sanitize($userId)."', '".$db->sanitize($tweetId)."', '".$db->sanitize($text)."', '".$db->sanitize(date('Y-m-d H:i:s', $timestamp))."', NOW(), '".$db->sanitize($recurring)."')");
+				$db->query("INSERT INTO ".DB_TBL_REMINDERS." (reminder_id, reminder_user_id, reminder_tweet_id, reminder_text, reminder_timestamp, reminder_added_timestamp) VALUES ('', '".$db->sanitize($userId)."', '".$db->sanitize($tweetId)."', '".$db->sanitize($text)."', '".$db->sanitize(date('Y-m-d H:i:s', $timestamp))."', NOW() )");
 				return true;
 				
 			}

@@ -5,84 +5,13 @@ define(MINDMETO_ROOT, '');
 require_once(MINDMETO_ROOT.'inc/session.php');
 require_once(MINDMETO_ROOT.'inc/oauth/twitterOAuth.php');
 require_once(MINDMETO_ROOT.'inc/reminder.php');
+require_once(MINDMETO_ROOT.'inc/twitter/bot.php');
 
 $content = NULL;
 $oauthState = $_SESSION['oauthState'];
 $oauthSessionToken = $_SESSION['oauthRequestToken'];
 $oauthToken = $_REQUEST['oauthToken'];
 $section = $_REQUEST['section'];
-
-function debugDump() {
-
-	echo '<pre>';
-		print_r($_SESSION);
-		print_r($_COOKIE);
-		var_dump($session);
-	echo '</pre>';
-
-}
-
-function handleTwitterAuthentication( $state ) {
-
-	global $session;
-	
-	/*
-	 * 'default': Get a request token from Twitter for new user
-	 * 'returned': The user has authorized the app on Twitter and been returned
-	 */
-	switch ($state) {
-	    case 'returned':
-
-			$userDetailsJSON = NULL;
-			
-			try {
-				
-				$to = new TwitterOAuth(OAUTH_CONSUMER_KEY, OAUTH_CONSUMER_SECRET, $_SESSION['oauthRequestToken'], $_SESSION['oauthRequestTokenSecret']);
-	      		$tok = $to->getAccessToken();	
-				$userDetails = $to->OAuthRequest('https://twitter.com/account/verify_credentials.json', array(), 'GET');
-					
-			} catch ( Exception $e ) {
-
-				header("Location: logout.php");
-					
-			}
-				
-			$userDetailsJSON = json_decode( $userDetails );
-
-			$session->loggedIn = $session->createSession( $userDetailsJSON->id, $tok['oauth_token'], $tok['oauth_token_secret'] );
-			if( !$session->loggedIn ) {
-				
-				header('Location: logout.php');
-	
-			}
-			
-	    break;
-		default:
-
-			try {
-
-	    		$to = new TwitterOAuth(OAUTH_CONSUMER_KEY, OAUTH_CONSUMER_SECRET);
-	    		$tok = $to->getRequestToken();
-	
-			} catch( Exception $e ) {
-
-				header('Location: logout.php');
-				
-			}
-			
-			$_SESSION['oauthRequestToken'] = $token = $tok['oauth_token'];
-    		$_SESSION['oauthRequestTokenSecret'] = $tok['oauth_token_secret'];
-    		$_SESSION['oauthState'] = "start";
-
-    		$oAuthRequestLink = $to->getAuthorizeURL($token);
-	
-			include( 'tmp/account/login.php' );
-
-	    break;
-	
-	}
-	
-}
 
 if( !$session->loggedIn ) {
 	
@@ -105,8 +34,28 @@ if( $session->loggedIn ) {
 	}
 		
 	$userDetailsJSON = json_decode( $userDetails );
+	$bot = new TwitterBot();
+	$reminders = $bot->reminder;
 	
-	$reminders = new Reminder();
+	if( isset( $_POST['command'] ) ) {
+
+		$commandResponse = $bot->parseCommand( $userDetailsJSON->id, $_POST['command'] );
+		$queryResult = NULL;
+
+		if( $commandResponse !== false ) {
+			
+			$queryResult = $commandResponse;
+			$session->userDetails = $db->fetchUserDetails( $session->userId );
+			
+		} else {
+	
+			$reminderResult = $bot->parseReminder( $_POST['command'], $session->userId, -1 );
+			if( $reminderResult !== false ) $queryResult = $reminderResult; 
+			
+		}
+
+	}
+
 	$existingReminders = $reminders->fetch( $session->userDetails['user_id'] );
 
 	include( 'tmp/account/reminders.php' );
