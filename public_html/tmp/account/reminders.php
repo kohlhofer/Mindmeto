@@ -19,7 +19,9 @@
 										 '<div class="reminder-data">'.
 										 	'<a href="#" class="remove"></a> '.$reminder['reminder_text'].
 										 '</div>'.
-										 '<div class="reminder-meta"></div>'.
+										 '<div class="reminder-meta">'.
+											date( 'jS M \a\t g:iA', convertDefaultTime( $session->userId, strtotime($reminder['reminder_timestamp']))).
+										 '</div>'.
 										 '</li>';
 
 								}

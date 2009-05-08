@@ -63,18 +63,21 @@
     
 	    	$result = $this->query('SELECT * FROM '.DB_TBL_USERS.' WHERE user_id="'.$this->sanitize($userId).'"');
 	    	if( $result->numRows() > 0 ) {
-	    		return $result->getRow();
+	    		$row = $result->getRow();
+				$row['user_twitter_data'] = unserialize( $row['user_twitter_data'] );
+				return $row;
 	    	}
     	
 	    	return false;
     
 	    }
     
-		function confirmSessionId( $userId, $sessionId ) {
+		function fetchUserId( $ip, $sessionId ) {
 
-			$result = $this->query( "SELECT user_id FROM ".DB_TBL_USERS." WHERE LENGTH(user_oauth_token) > 0 AND LENGTH(user_oauth_token_secret) > 0 AND user_id='".$this->sanitize($userId)."' AND user_session_id='".$this->sanitize($sessionId)."'" );
+			$result = $this->query( "SELECT user_id FROM ".DB_TBL_USERS." WHERE LENGTH(user_oauth_token) > 0 AND LENGTH(user_oauth_token_secret) > 0 AND user_ip='".$this->sanitize($ip)."' AND user_session_id='".$this->sanitize($sessionId)."'" );
 			if( $result->numRows() > 0 ) {
-				return true;
+				$row = $result->getRow();
+				return $row['user_id'];
 			}
 			
 			return false;

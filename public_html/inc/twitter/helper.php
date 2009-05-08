@@ -31,15 +31,21 @@ function handleTwitterAuthentication( $state ) {
 					
 			} catch ( Exception $e ) {
 
+				/*echo '01 - '.$e->getMessage();
+				debugDump();
+				exit();*/
 				header("Location: logout.php");
 					
 			}
 				
 			$userDetailsJSON = json_decode( $userDetails );
 
-			$session->loggedIn = $session->createSession( $userDetailsJSON->id, $tok['oauth_token'], $tok['oauth_token_secret'] );
+			$session->loggedIn = $session->createSession( $userDetailsJSON->id, $tok['oauth_token'], $tok['oauth_token_secret'], $userDetailsJSON );
 			if( !$session->loggedIn ) {
 				
+				/*echo '02';
+				debugDump();
+				exit();*/
 				header('Location: logout.php');
 	
 			}
@@ -54,6 +60,9 @@ function handleTwitterAuthentication( $state ) {
 	
 			} catch( Exception $e ) {
 
+				/*echo '02';
+				debugDump();
+				exit();*/
 				header('Location: logout.php');
 				
 			}

@@ -94,6 +94,12 @@ div#how-to .note {
   	line-height: 1.3em;
 }
 
+/* Login */
+div#login {
+	margin: 1em 0;
+	text-align: center;
+}
+
 /* Commands */
 div#commands {
 	border-top: 1px solid #eeeeee;
@@ -125,6 +131,10 @@ ul#ticker li {
 	margin: 0 0 15px 0;
 	color: #000000;
 }
+ul#ticker li a {
+	color: #000000;
+	text-decoration: none;
+}
 ul#ticker li div.reminder {
 	background: #fffab1;
 	padding: 5px 10px;
@@ -145,7 +155,7 @@ ul#ticker li div.reminder-meta img.avatar {
 }
 ul#ticker li.odd div.reminder-meta {
 	text-align: right;
-	background: transparent url(../img/misc/speech-right.png) no-repeat 175px 0px;
+	background: transparent url(../img/misc/speech-right.png) no-repeat 235px 0px;
 	padding: 0 30px 0 0;
 }
 

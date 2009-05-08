@@ -4,8 +4,7 @@
 		<img src="public/img/logos/standard.png" alt="MindMeTo" />
 	</div>
 	<div>
-	    <h1>Sign in with your Twitter account...</h1>
-	    <div id="oauth">
+	    <div id="login">
 	        <p>
 	            When you click the button below you will be sent to Twitter.com and asked to grant mindmeto.com access to your account.
 	        </p>

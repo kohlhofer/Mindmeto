@@ -13,11 +13,11 @@
 	                    <span class="note">We will quickly follow you back.</span>
 	                </li>
 	                <li>
-	                    Add a reminder by tweeting: <strong> @mindmeto buy some milk tomorrow</strong>
+	                    Add a reminder by tweeting: <strong>@mindmeto buy some milk tomorrow</strong>
 	                    <span class="note">This will add "Buy some milk" to tomorrow's schedule. (You can also add your reminder privately by sending a direct message.)</span>
 	                </li>
 	                <li>
-	                    At the scheduled time we will send you a private direkt message to "buy some milk".
+	                    At the scheduled time we will send you a private direct message to "buy some milk".
 	                </li>
 	        	</ol>
 	    	</div>
@@ -39,14 +39,14 @@
 	              <div class="left" style="width: 256px">
 	              		<h2>MindMeTo is fully configurable and works the way you want it to</h2>
 	                    <ul>
-	                    	<li>dm mindmeto timezone GMT+3 <span class="note">Sets your time zone to GMT+3</span></li>
-	                    	<li>dm mindmeto default time 8 <span class="note">Reminders without a specific time will be sent at 8am (use 24 hour values)</span></li>
-	                    	<li>dm mindmeto list reminders <span class="note">Will send you a link to your reminders</span></li>
-	                     	<li>dm mindmeto cancel #123 <span class="note">#123 is the id of a reminder as stated in the confirmation</span></li>
-	                     	<li>dm mindmeto confirmations ON <span class="note">New reminders will be confirmed with a direct message</span></li>
-	                     	<li>dm mindmeto confirmations OFF</li>
-	                     	<li>dm mindmeto reminders OFF <span class="note">Will suspend all reminders until you turn this ON again</span></li>
-	                     	<li>dm mindmeto reminders ON</li>
+	                    	<li>d mindmeto timezone GMT+3 <span class="note">Sets your time zone to GMT+3. You can find out your timezone relative to GMT <a href="http://wwp.greenwichmeantime.com/">here</a>.</span></li>
+	                    	<li>d mindmeto default time 8 <span class="note">Reminders without a specific time will be sent at 8am (use 24 hour values)</span></li>
+	                    	<li>d mindmeto list reminders <span class="note">Will send you a link to your reminders</span></li>
+	                     	<li>d mindmeto cancel #123 <span class="note">#123 is the id of a reminder as stated in the confirmation</span></li>
+	                     	<li>d mindmeto confirmations ON <span class="note">New reminders will be confirmed with a direct message</span></li>
+	                     	<li>d mindmeto confirmations OFF</li>
+	                     	<li>d mindmeto reminders OFF <span class="note">Will suspend all reminders until you turn this ON again</span></li>
+	                     	<li>d mindmeto reminders ON</li>
 	                    </ul>
 	              </div>
 			</div>

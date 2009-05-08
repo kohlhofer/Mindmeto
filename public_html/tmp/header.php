@@ -5,6 +5,8 @@
 		<title>MindMeTo</title>
 		<link rel="stylesheet" type="text/css" href="<?=BASE_URL?>public/css/reset.css" />
 		<link rel="stylesheet" type="text/css" href="<?=BASE_URL?>public/css/style.css" />
+		<script src="public/js/jquery-1.3.2.js" type="text/javascript"></script>
+		<script src="public/js/mindmeto.js" type="text/javascript"></script>
 		<?php if( isset($headerCode) ) echo $headerCode; ?>
 	</head>
 	<body>
@@ -34,8 +36,8 @@
 								
 								<?php else: ?>
 									
-								<a href="account.php">Your account</a><br />
-								<span class="note">Hello <?=$userDetailsJSON->screen_name?> (<a href="logout.php">logout</a>)</span>
+								<a href="list.php">Your account</a><br />
+								<span class="note">Hello <?=$session->userDetails['user_twitter_data']->screen_name?> (<a href="logout.php">logout</a>)</span>
 									
 								<?php endif; ?>
 							</li>
@@ -44,7 +46,7 @@
 								<?php if( !$session->loggedIn ): ?>
 								<img src="public/img/avatars/avatar.png" alt="MindMeTo" class="avatar" />
 								<?php else: ?>
-								<img src="<?=$userDetailsJSON->profile_image_url?>" alt="<?=$userDetailsJSON->screen_name?>" class="avatar" />
+								<img src="<?=$session->userDetails['user_twitter_data']->profile_image_url?>" alt="<?=$session->userDetails['user_twitter_data']->screen_name?>" class="avatar" />
 								<?php endif; ?>
 								
 							</li>

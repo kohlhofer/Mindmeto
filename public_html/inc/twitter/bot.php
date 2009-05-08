@@ -230,7 +230,7 @@
 			return $commandParsed;
 			
 		}
-		function parseReminder( $command, $userId, $twitterId ) {
+		function parseReminder( $type, $command, $userId, $twitterId ) {
 			
 			global $db;
 			
@@ -240,8 +240,9 @@
 		
 				// Make sure the user isn't setting a reminder in the past
 				$reminderSetInFuture = ( $reminderData['epoch'] > time() ) ? true : false;
+				$public = ( $type == "replies" ) ? 1 : 0;
 		
-				if( $reminderSetInFuture && $this->reminder->add( $userId, $twitterId, $reminderData['reminder'], $reminderData['epoch'] ) ) {
+				if( $reminderSetInFuture && $this->reminder->add( $userId, $twitterId, $reminderData['reminder'], $command, $reminderData['epoch'], $public ) ) {
 			
 					// Send a successful DM!
 					$reminderId = $db->fetchLastInsertId();
@@ -304,9 +305,15 @@
 							$update->text = trim(substr($update->text, strripos($update->text, "@mindmeto")+10, strlen($update->text) ));
 						}
 	
-						$reminderResult = $this->parseReminder( $update->text, $userId, $update->id );
+						$reminderResult = $this->parseReminder( $type, $update->text, $userId, $update->id );
 						if( $reminderResult !== false ) $this->sendDM( $userId, $reminderResult );
 						
+					}
+					
+					if( $type == "dm" ) {
+						$this->updateUserSettings( $userId, 'user_twitter_data', serialize($update->sender) );
+					} else if( $type == "replies" ) {
+						$this->updateUserSettings( $userId, 'user_twitter_data', serialize($update->user) );
 					}
 			
 				}
