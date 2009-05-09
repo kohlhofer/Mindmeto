@@ -14,8 +14,8 @@
 
 		<div id="masthead">
 			<div id="masthead-inner" class="center clearfix">
-				<?php if( $session->loggedIn ): ?>
-				<div class="left">
+				<div style="width: 660px" class="left">
+					<?php if( $session->loggedIn ): ?>
 					<ul class="clearfix">
 						<li>
 							<a href="index.php">Home</a>
@@ -24,10 +24,10 @@
 							<a href="index.php#commands">Commands</a>
 						</li>
 					</ul>
+					<?php endif; ?>
 				</div>
-				<?php endif; ?>
-				<div class="right">
-					<ul class="clearfix">
+				<div style="width: 300px" class="right">
+					<ul class="clearfix" style="float: right">
 						<li style="text-align: right">
 							
 							<?php if( !$session->loggedIn ): ?>

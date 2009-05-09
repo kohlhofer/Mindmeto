@@ -7,8 +7,26 @@
 			
 			global $db;
 			
-			$results = $db->query("SELECT * FROM ".DB_TBL_REMINDERS." WHERE reminder_user_id='".$db->sanitize($userId)."' ORDER BY reminder_timestamp ASC");
+			$results = $db->query("SELECT * FROM ".DB_TBL_REMINDERS." WHERE reminder_user_id='".$db->sanitize($userId)."' AND reminder_sent=0 ORDER BY reminder_timestamp ASC");
 			return $results;
+			
+		}
+		
+		function fetchLatestPublic( $id ) {
+			
+			global $db;
+			
+			$id = (isset($id) && is_numeric($id)) ? intval($id) : false;
+			
+			if( $id !== false ) {
+				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE r.reminder_sent = 0 AND u.user_id = r.reminder_user_id AND r.reminder_id > ".$db->sanitize($id)." ORDER BY r.reminder_added_timestamp DESC LIMIT 10");
+			} else {
+				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE r.reminder_sent = 0 AND u.user_id = r.reminder_user_id ORDER BY r.reminder_added_timestamp DESC LIMIT 10");
+			}
+			
+			if( $results->numRows() > 0 ) return $results;
+			
+			return false;
 			
 		}
 	    

@@ -1,4 +1,4 @@
-var tickerLastId = 0;
+var tickerCount = 0;
 
 function removeReminder( id ) {
 	
@@ -9,7 +9,7 @@ function removeReminder( id ) {
 			function(data){
 	    	
 				if( data == true ) {
-					$("#reminder-"+id).fadeOut("true");
+					$("#reminder-"+id).fadeOut("true", function() { $(this).remove(); });
 				}
 	
 		    }
@@ -21,30 +21,58 @@ function removeReminder( id ) {
 	
 }
 
+jQuery.slowEach = function( array, interval, callback ) { 
+	
+	if( ! array.length ) return; 
+	var i = 0; 
+	next(); 
+	function next() { 
+	    if( callback.call( array[i], i, array[i] ) !== false ) 
+	        if( ++i > 0 ) 
+	            setTimeout( next, interval ); 
+	} 
+	
+};
+
 function updateTicker() {
 	
 	if( $("#ticker") ) {
-	
+
 		var url = ( tickerLastId == 0 ) ? "ajax.php?a=ticker" : "ajax.php?a=ticker&id="+tickerLastId;
 		$.getJSON(url,
 			function(tickerData){
 				
-				$.each(tickerData.reminders, function(i,item){
-					var listEl = $("<li/>");
-					var html = '<div class="reminder">'+	
-									'<b>@mindmeto</b> '+item.reminder+
-								'</div>'+
-								'<div class="reminder-meta">'+
-									'<a href="http://twitter.com/'+item.username+'"><img src="'+item.avatar+'" class="avatar" alt="'+item.username+'"  /> '+item.username+'</a>'+
-								'</div>';
-					if( i % 2 != 0 ) listEl.attr('class', 'odd');
-					listEl.html(html).appendTo("#ticker").hide().fadeIn("fast");
-				});
-				
-				tickerLastId = tickerData.latestId;
+				if( tickerData.reminders ) {
+					
+					if( tickerLastId == 0 ) {
+						$.each(tickerData.reminders, tickerCallback );
+					} else {
+						$.slowEach(tickerData.reminders, 1000, tickerCallback );
+					}
+					
+					tickerLastId = tickerData.latestId;
+				}
 
 		});
 	
 	}
+	
+}
+
+function tickerCallback( i, item ){
+	
+	var listEl = $("<li/>");
+	var html = '<div class="reminder">'+	
+					'<b>@mindmeto</b> '+item.reminder+
+				'</div>'+
+				'<div class="reminder-meta">'+
+					'<a href="http://twitter.com/'+item.username+'"><img src="'+item.avatar+'" class="avatar" alt="'+item.username+'"  /> '+item.username+'</a>'+
+				'</div>';
+			
+	if( tickerCount % 2 != 0 ) listEl.attr('class', 'odd');
+	listEl.html(html).prependTo("#ticker").hide().fadeIn("fast");
+	tickerCount = ( tickerCount ) ? 0 : 1;
+	
+	if( $("#ticker li").length > 20 ) $('#ticker li:last-child').fadeOut("fast", function() { $('#ticker li:last-child').remove(); });
 	
 }

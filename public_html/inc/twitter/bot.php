@@ -57,7 +57,7 @@
 			$sql = "SELECT r.* , u.user_timezone, u.user_default_time, u.user_id ".
 				 "FROM ".DB_TBL_REMINDERS." AS r ".
 				 "LEFT JOIN ".DB_TBL_USERS." AS u ON u.user_id = r.reminder_user_id ".
-				 "WHERE (".
+				 "WHERE r.reminder_sent = 0 AND ((".
 					"(".
 						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' ".
 						"AND DATE_ADD( CONVERT_TZ( NOW(), '+00:00', IFNULL(u.user_timezone, '+00:00') ), INTERVAL ".REMINDER_PERIOD." MINUTE ) > r.reminder_timestamp ".
@@ -68,7 +68,7 @@
 						"AND DATE( r.reminder_timestamp ) <= DATE( CONVERT_TZ( NOW(), '+00:00', IFNULL( u.user_timezone, '+00:00' ) ) ) ".
 						"AND DATE_FORMAT( CONVERT_TZ( NOW() , '+00:00', IFNULL(u.user_timezone, '+00:00') ), '%H:%i' ) >= IFNULL( u.user_default_time, '8' ) + ':00' ".
 					")".
-				")".
+				"))".
 				"ORDER BY CONVERT_TZ( r.reminder_timestamp, '+00:00', IFNULL(u.user_timezone, '+00:00') ) ASC";
 
 			$result = $db->query( trim($sql) );
@@ -78,7 +78,7 @@
 				$reminderText = $reminder['reminder_text'].' | See all reminders: http://mindmeto.com/list.php';
 				if( $this->sendDM( $reminder['reminder_user_id'], $reminderText, TWITTER_DM_REMINDER ) ) {
 					
-					$db->query("DELETE FROM ".DB_TBL_REMINDERS." WHERE reminder_id='".$db->sanitize($reminder['reminder_id'])."'");
+					$db->query("UPDATE ".DB_TBL_REMINDERS." SET reminder_sent=1 WHERE reminder_id='".$db->sanitize($reminder['reminder_id'])."'");
 					
 				}
 				

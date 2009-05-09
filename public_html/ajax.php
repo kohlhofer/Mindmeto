@@ -15,6 +15,7 @@
 	}
 	
 	require_once(MINDMETO_ROOT.'inc/session.php');
+	require_once(MINDMETO_ROOT.'inc/reminder.php');
 	require_once(MINDMETO_ROOT.'inc/twitter/helper.php');
 
 	switch( $_REQUEST['a'] ) {
@@ -47,23 +48,19 @@
 		break;
 		
 		/* 
-			Search the reminder table for the latest reminders set and feed them in JSON
-			format for Javascript usage
+			Search the reminder table for the latest reminders set and send them 
+			out in JSON format for Javascript usage
 		*/
 		case "ticker":
 		
 			$newReminders = array();
+			$reminder = new Reminder();
 			
-			$id = ( isset($_REQUEST['id']) && is_numeric($_REQUEST['id'])) ? intval($_REQUEST['id']) : false;
+			$results = $reminder->fetchLatestPublic();
 			
-			if( $id !== false ) {
-				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE u.user_id = r.reminder_user_id AND reminder_id > ".$db->sanitize($id)." ORDER BY reminder_added_timestamp DESC LIMIT 10");
-			} else {
-				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE u.user_id = r.reminder_user_id ORDER BY reminder_added_timestamp DESC LIMIT 10");
-			}
-			
-			$i = 0; $latestId = 0;
-			if( $results->numRows() > 0 ) {
+			if( $results && $results->numRows() > 0 ) {
+				
+				$i = 0; $latestId = 0;
 				
 				while( $reminder = $results->getRow() ) {
 					

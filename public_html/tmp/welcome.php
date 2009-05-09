@@ -30,7 +30,9 @@
 			</div>
 			<div id="ticker-container" class="right-column">
 	
-				<ul id="ticker"></ul>
+				<ul id="ticker">
+					<?=$publicReminders?>
+				</ul>
 	
 			</div>
 		</div>
