@@ -1,5 +1,26 @@
 var tickerLastId = 0;
 
+function removeReminder( id ) {
+	
+	var remove = confirm("Are you sure you want to remove this reminder? This cannot be undone!");
+	if( remove == true ) {
+		
+		$.getJSON("ajax.php?a=remove&id="+id,
+			function(data){
+	    	
+				if( data == true ) {
+					$("#reminder-"+id).fadeOut("true");
+				}
+	
+		    }
+		);
+		
+	}
+	
+	return false;
+	
+}
+
 function updateTicker() {
 	
 	if( $("#ticker") ) {
@@ -11,7 +32,7 @@ function updateTicker() {
 				$.each(tickerData.reminders, function(i,item){
 					var listEl = $("<li/>");
 					var html = '<div class="reminder">'+	
-									item.reminder+
+									'<b>@mindmeto</b> '+item.reminder+
 								'</div>'+
 								'<div class="reminder-meta">'+
 									'<a href="http://twitter.com/'+item.username+'"><img src="'+item.avatar+'" class="avatar" alt="'+item.username+'"  /> '+item.username+'</a>'+

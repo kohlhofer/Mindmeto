@@ -1,5 +1,5 @@
 body {
-	background: #ffffff;
+	background: #f4f4f4;
 	text-align: left;
 	font: normal 95% Arial, Lucida Grande, Verdana, Helvetica, Arial, Sans-serif;
 	line-height:  1.75em;
@@ -12,57 +12,61 @@ a:hover {
 	text-decoration: none;
 }
 
-div#container {
-	width: 960px;
-	border-top: 15px solid #beebff;
-}
-div#content {
-	padding: 0 0 0 100px;
-}
-
-div#about {
-	background: transparent url(../img/borders/border.jpg) repeat-x 0% 100%;
-	text-align: center;
-}
 /* Masthead */
 div#masthead {
-	margin: 30px 0;
+	text-align: center;
+	padding: 1em 0;
+	background: #00b2e5;
 }
-div#masthead li {
+div#masthead a {
+	color: #f2f2f2 !important;
+}
+div#masthead-inner li {
 	float: left;
 	display: block;
 	margin: 0 15px 0 0;
 	vertical-align: middle;
 }
-div#masthead li img.avatar {
+div#masthead-inner li img.avatar {
 	vertical-align: middle;
 	background: #f4f4f4;
 	padding: 2px;
 	width: 46px;
 	height: 46px;
 }
-div#masthead li span.note {
-	color: #999;
+div#masthead-inner li span.note {
+	color: #f4f4f4;
 	font-size: 0.7em;
 }
-div#masthead li a {
+div#masthead-inner li a {
 	color: #000000;
 	font-weight: bold;
 	text-decoration: none;
 }
 
-/* Content */
-div#two-column {
-	margin: 30px 0 0 0;
-	color: #333333;
+/* About */
+div#about {
+	background: #00c6ff;
+	padding: 1em 0;
 }
-div#two-column div#left-column {
-	width: 574px;
+
+/* Content */
+div#content-container {
+	background: #ffffff;
+	padding: 2em 0 1em 0;
+}
+div#content {
+	text-align: left;
+	position: relative;
+}
+.left-column {
+	width: 590px;
 	margin: 0 30px 0 0;
 	float: left;
 }
-div#two-column div#right-column {
-	width: 256px;
+.right-column {
+	width: 300px;
+	padding: 20px;
 	float: left;
 }
 
@@ -72,7 +76,7 @@ div#how-to ol {
   	line-height: 1.3em;
   	list-style-type: decimal;
   	background-color: #FFF;
-  	padding: 0 40px 2em 3em;
+  	padding: 0 40px 2em 0;
 }
 div#how-to li {
   	margin: 0 0 1.2em 0;
@@ -127,6 +131,12 @@ div#commands span.note {
 }
 
 /* Ticker */
+div#ticker-container {
+	position: absolute;
+	top: -3em;
+	right: 0px;
+	background: #ffffff;
+}
 ul#ticker li {
 	margin: 0 0 15px 0;
 	color: #000000;
@@ -221,6 +231,11 @@ div#footer a {
 
 
 /* Positioning */
+.center {
+	text-align: left;
+	width: 960px;
+	margin: 0 auto;
+}
 .left {
 	float: left;
 }

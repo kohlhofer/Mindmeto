@@ -7,7 +7,7 @@
 			
 			global $db;
 			
-			$results = $db->query("SELECT * FROM ".DB_TBL_REMINDERS." WHERE reminder_user_id='".$db->sanitize($userId)."'");
+			$results = $db->query("SELECT * FROM ".DB_TBL_REMINDERS." WHERE reminder_user_id='".$db->sanitize($userId)."' ORDER BY reminder_timestamp ASC");
 			return $results;
 			
 		}

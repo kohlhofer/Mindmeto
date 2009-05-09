@@ -1,11 +1,9 @@
-			<div id="footer">
-				MindMeTo was developed by <a href="http://nial.me">Nial Giacomelli</a>, <a href="http://plasticshore.com">Alexander Kohlhofer</a> &amp; <a href="http://fvda.co.uk">Filip Visnjic</a>
-			</div>
-
+	<div id="footer">
+		<div id="footer-inner" class="center">
+			MindMeTo was developed by <a href="http://nial.me">Nial Giacomelli</a>, <a href="http://plasticshore.com">Alexander Kohlhofer</a> &amp; <a href="http://fvda.co.uk">Filip Visnjic</a>
 		</div>
 	</div>
 
-	<style type='text/css'>@import url('http://s3.amazonaws.com/getsatisfaction.com/feedback/feedback.css');</style>
 	<script src='http://s3.amazonaws.com/getsatisfaction.com/feedback/feedback.js' type='text/javascript'></script>
 	<script type="text/javascript" charset="utf-8">
 	  var tab_options = {}

@@ -104,4 +104,19 @@ function convertDefaultTime( $userId, $timestamp ) {
 
 }
 
+function cancelReminder( $userId, $id ) {
+	
+	global $db;
+	
+	$db->query("DELETE FROM ".DB_TBL_REMINDERS." WHERE reminder_user_id='".$db->sanitize($userId)."' AND reminder_id='".$db->sanitize($id)."'");
+	
+	$result = $db->query("SELECT ROW_COUNT() AS num_reminders_deleted");
+	$results = $result->getRow();
+	
+	if( $results['num_reminders_deleted'] > 0 ) return true;
+	
+	return false;
+	
+}
+
 ?>

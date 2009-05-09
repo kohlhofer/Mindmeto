@@ -1,30 +1,46 @@
 <?php include_once('./tmp/header.php'); ?>
 
 	<div id="about">
-		<img src="public/img/logos/standard.png" alt="MindMeTo" />
+		<div id="about-inner" class="center">
+			<img src="public/img/logos/standard.png" alt="MindMeTo" />
+		</div>
 	</div>
-	<div id="two-column" class="clearfix">
-		<div id="left-column">
 	
-			<div id="how-to">
-				<ol>
-	                <li>
-	                    Follow <a href="http://twitter.com/mindmeto" title="Open the mindmeto profile on Twitter to follow it...">mindmeto</a> on Twitter.
-	                    <span class="note">We will quickly follow you back.</span>
-	                </li>
-	                <li>
-	                    Add a reminder by tweeting: <strong>@mindmeto buy some milk tomorrow</strong>
-	                    <span class="note">This will add "Buy some milk" to tomorrow's schedule. (You can also add your reminder privately by sending a direct message.)</span>
-	                </li>
-	                <li>
-	                    At the scheduled time we will send you a private direct message to "buy some milk".
-	                </li>
-	        	</ol>
-	    	</div>
-    	
-	    	<a name="commands"></a>
-			<div id="commands" class="clearfix">
-	             <div class="left" style="width: 256px; margin: 0 30px 0 0">
+	<div id="content-container">
+		<div id="content" class="center clearfix">
+			
+			<div class="left-column">
+				
+				<div id="how-to">
+					<ol>
+		                <li>
+		                    Follow <a href="http://twitter.com/mindmeto" title="Open the mindmeto profile on Twitter to follow it...">mindmeto</a> on Twitter.
+		                    <span class="note">We will quickly follow you back.</span>
+		                </li>
+		                <li>
+		                    Add a reminder by tweeting: <strong>@mindmeto buy some milk tomorrow</strong>
+		                    <span class="note">This will add "Buy some milk" to tomorrow's schedule. (You can also add your reminder privately by sending a direct message.)</span>
+		                </li>
+		                <li>
+		                    At the scheduled time we will send you a private direct message to "buy some milk".
+		                </li>
+		        	</ol>
+		    	</div>
+				
+			</div>
+			<div id="ticker-container" class="right-column">
+	
+				<ul id="ticker"></ul>
+	
+			</div>
+		</div>
+	</div>
+	<div id="commands-container">
+		<div id="commands" class="center clearfix">
+			
+			<div class="left-column">
+				
+				<div class="left" style="width: 256px; margin: 0 30px 0 0">
 	                    <h2>MindMeTo is super easy to use and extremely flexible</h2>
 	                    <ul>
 		                    <li>@mindmeto ... in two hours</li>
@@ -49,13 +65,9 @@
 	                     	<li>d mindmeto reminders ON</li>
 	                    </ul>
 	              </div>
+				
 			</div>
-    	
-		</div>
-		<div id="right-column">
-		
-			<ul id="ticker"></ul>
-		
+			
 		</div>
 	</div>
 
