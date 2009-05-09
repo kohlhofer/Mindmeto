@@ -46,14 +46,14 @@ div#masthead-inner li a {
 
 /* About */
 div#about {
-	background: #00c6ff;
+	background: #00b2e5;
 	padding: 1em 0;
 }
 
 /* Content */
 div#content-container {
 	background: #ffffff;
-	padding: 2em 0 1em 0;
+	padding: 2em 0 6em 0;
 }
 div#content {
 	text-align: left;
@@ -131,12 +131,6 @@ div#commands span.note {
 }
 
 /* Ticker */
-div#ticker-container {
-	position: absolute;
-	top: -3em;
-	right: 0px;
-	background: #ffffff;
-}
 ul#ticker li {
 	margin: 0 0 15px 0;
 	color: #000000;
@@ -165,7 +159,7 @@ ul#ticker li div.reminder-meta img.avatar {
 }
 ul#ticker li.odd div.reminder-meta {
 	text-align: right;
-	background: transparent url(../img/misc/speech-right.png) no-repeat 235px 0px;
+	background: transparent url(../img/misc/speech-right.png) no-repeat 275px 0px;
 	padding: 0 30px 0 0;
 }
 
@@ -210,6 +204,22 @@ div.speech {
 	background: #fffab1;
 	padding: 10px;
 	font-size: 0.9em;
+}
+
+/* Sidebars */
+div#reminder-settings {
+	font-size: 0.75em;
+	margin: 15px 0 0 0;
+	padding: 0 0 0 30px;
+	color: #333;
+}
+div#ticker-container, div#reminder-web-input {
+	position: absolute;
+	top: -4em;
+	right: 0px;
+	background: #ffffff;
+	-webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
 }
 
 /* Forms */

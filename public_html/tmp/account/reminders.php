@@ -13,8 +13,7 @@
 						<div id="reminders">
 						
 							<?php if( $queryResult !== NULL ) echo $queryResult; ?>
-						
-					        <?php if( isset( $existingReminders ) && count( $existingReminders ) > 0 ):
+					        <?php if( isset( $existingReminders ) && count( $existingReminders ) > 0 ) {
 
 								echo '<ul>';
 									while( $reminder = $existingReminders->getResultsArray() ) {
@@ -37,33 +36,31 @@
 									}
 								echo '</ul>';
 
-							else: ?>
+							} else {
 
-								You currently have no reminders set!
+								echo 'You currently have no reminders set!';
 
-							<?php endif; ?>
+							} ?>
 						</div>
 						
 					</div>
-					<div class="right-column">
+					<div id="reminder-web-input" class="right-column">
+							
+						<div class="speech">Add a new reminder</div>
+					
+						<div id="reminder-web-form">
+							<form action="#" method="post">
+								<input type="text" name="command" class="large-input" maxlength="200" />
 
-						<div id="reminder-web-input">
-
-							<div class="speech">Add a new reminder</div>
+								<input type="submit" value="Go!" />
+							</form>
+						</div>
 						
-							<div id="reminder-web-form">
-								<form action="#" method="post">
-									<input type="text" name="command" class="large-input" />
-
-									<input type="submit" value="Go!" />
-								</form>
-							</div>
-						
-							User timezone: GMT<?=substr( $session->userDetails['user_timezone'], 0, stripos($session->userDetails['user_timezone'], ":"))?><br />
-							Default time: <?=$session->userDetails['user_default_time']?><br />
-							<?php echo ( $session->userDetails['user_allow_reminders'] ) ? "Reminders are ON" : "Reminders are OFF"; ?><br />
-							<?php echo ( $session->userDetails['user_allow_confirmations'] ) ? "Confirmations are ON" : "Confirmations are OFF"; ?>
-
+						<div id="reminder-settings">
+							Your timezone is currently set to GMT<b><?=substr( $session->userDetails['user_timezone'], 0, stripos($session->userDetails['user_timezone'], ":"))?></b><br />
+						    Reminders without a time set will arrive at hour <b><?=$session->userDetails['user_default_time']?></b><br />
+							<?php echo ( $session->userDetails['user_allow_reminders'] ) ? "Direct Message reminder messages are <b>ON</b>" : "Direct Message reminder messages are <b>OFF</b>"; ?><br />
+							<?php echo ( $session->userDetails['user_allow_confirmations'] ) ? "Direct Message confirmation messages are <b>ON</b>" : "Direct Message reminder messages are <b>OFF</b>"; ?>
 						</div>
 
 					</div>
