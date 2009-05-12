@@ -22,24 +22,12 @@ if( !$session->loggedIn ) {
 
 if( $session->loggedIn ) {
 
-	/*$to = new TwitterOAuth(OAUTH_CONSUMER_KEY, OAUTH_CONSUMER_SECRET, $session->userDetails['user_oauth_token'], $session->userDetails['user_oauth_token_secret'] );
-	try {
-			
-		$userDetails = $to->OAuthRequest('https://twitter.com/account/verify_credentials.json', array(), 'GET');
-			
-	} catch ( Exception $e ) {
-
-		header('Location: logout.php');
-			
-	}
-		
-	$userDetailsJSON = json_decode( $userDetails ); */
 	$bot = new TwitterBot();
 	$reminders = $bot->reminder;
 	
 	if( isset( $_POST['command'] ) ) {
 
-		$commandResponse = $bot->parseCommand( $session->userDetails['user_twitter_data']->id, $_POST['command'] );
+		$commandResponse = $bot->parseCommand( "web", $session->userDetails['user_twitter_data']->id, $_POST['command'] );
 		$queryResult = NULL;
 
 		if( $commandResponse !== false ) {
@@ -57,7 +45,21 @@ if( $session->loggedIn ) {
 	}
 
 	$existingReminders = $reminders->fetch( $session->userId );
+	
+	$headerCode = <<<JS
+			<script>
+				$(document).ready(function() {
 
+					if( $('#reminder-web-result') ) {
+						
+						$('#reminder-web-result').effect("highlight", { 'color': '#fdef28' }, 1500);
+						
+					}
+
+				});
+			</script>
+JS;
+	
 	include( 'tmp/account/reminders.php' );
 	
 } 

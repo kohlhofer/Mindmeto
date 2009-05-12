@@ -1,5 +1,5 @@
 body {
-	background: #f4f4f4;
+	background: #DDD;
 	text-align: left;
 	font: normal 95% Arial, Lucida Grande, Verdana, Helvetica, Arial, Sans-serif;
 	line-height:  1.75em;
@@ -15,14 +15,12 @@ a:hover {
 /* Masthead */
 div#masthead {
 	text-align: center;
-	padding: 1em 0;
-	background: #00b2e5;
+	padding: 5px 0;
+	background: #00789b;
 }
+
 div#masthead a {
 	color: #f2f2f2 !important;
-}
-div#masthead {
-	width: 100%;
 }
 div#masthead-inner li {
 	float: left;
@@ -44,24 +42,23 @@ div#masthead-inner li span.note {
 div#masthead-inner li a {
 	color: #000000;
 	font-weight: bold;
-	text-decoration: none;
-}
-
+	}
+ 
 /* About */
 div#about {
 	background: #00b2e5;
-	padding: 1em 0;
+	padding: 2.5em 0 1.5em 0;
 }
 
 /* Content */
 div#content-container {
 	background: #ffffff;
-	padding: 2em 0 6em 0;
+	padding: 1em 0 0 0;
 }
 div#content {
 	text-align: left;
 	position: relative;
-	min-height: 200px;
+	min-height: 100px;
 }
 .left-column {
 	width: 590px;
@@ -76,14 +73,14 @@ div#content {
 
 /* How to */
 div#how-to ol {
-  	font-size: 1.4em;
+  	font-size: 1.3em;
   	line-height: 1.3em;
   	list-style-type: decimal;
   	background-color: #FFF;
-  	padding: 0 40px 2em 0;
+  	padding: 1em 40px 1.5em 0;
 }
 div#how-to li {
-  	margin: 0 0 1.2em 0;
+  	margin: 0 0 1.3em 0;
   	font-weight: bold;
 }
 div#how-to a {
@@ -95,48 +92,68 @@ div#how-to strong {
 }
 div#how-to .note {
   	color: #999;
-  	font-size: 0.8em;
+  	font-size: 0.75em;
   	font-weight: normal;
   	display: block;
   	margin: 0.4em 0 0 1em;
-  	line-height: 1.3em;
+  	line-height: 1.4em;
 }
 
 /* Login */
 div#login {
-	margin: 1em 0;
+	margin: 1em auto 3em auto;
 	text-align: center;
+	font-size: 1.2em;
+	background-color: #EEE;
+	padding: 1em 2em;
+	width: 500px;
+		-webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border: 1px solid #DDD;
+}
+
+div#login p {
+	margin: 1em 0;
 }
 
 /* Commands */
+div#commands-container {
+	border-top: 1px solid #CCC;
+	background: #f4f4f4 url(../img/backgrounds/grey.png) repeat-x 0% 0%;
+	padding-bottom: 2em;
+}
 div#commands {
-	border-top: 1px solid #eeeeee;
 	padding: 30px 0 0 0;
 }
 div#commands h2 {
-  	font-size: 1.25em;
-	padding-top: 1em;
+  	font-size: 1em;
 	font-weight: bold;
 	color: #007fff;
+	margin: 0;
 }
 div#commands ul {
-	margin-top: 1em;
+	margin-top: 0.5em;
+	border-bottom: 1px dashed #DDD;
+	font-size: 0.9em;
 }
 div#commands li {
-  	padding: 0.7em 0;
-  	border-top: 1px solid #f4f4f4;
+  	padding: 0.3em 0;
+  	border-top: 1px dashed #DDD;
+  	color: #333;
+  	font-weight: bold;
 }
 div#commands span.note {
-  	color: #84815b;
+  	color: #999;
   	font-style: italic;
-  	font-size: 0.9em;
-  	font-weight: normal;
   	display: block;
+  	line-height: 1.5em;
+  	margin-left: 1em;
+  	font-weight: normal;
 }
 
 /* Ticker */
 ul#ticker li {
-	margin: 0 0 15px 0;
+	margin: 0 0 1em 0;
 	color: #000000;
 }
 ul#ticker li a {
@@ -145,13 +162,13 @@ ul#ticker li a {
 }
 ul#ticker li div.reminder {
 	background: #fffab1;
-	padding: 5px 10px;
-	font-size: 0.9em;
-	font-weight: bold;
+	padding: 10px 20px;
+	-webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    line-height: 1.5em;
 }
 ul#ticker li div.reminder-meta {
-	font-size: 0.65em;
-	padding: 0 0 0 30px;
+	padding: 0.4em 0 0 33px;
 	background: transparent url(../img/misc/speech-left.png) no-repeat 10px 0px;
 }
 ul#ticker li div.reminder-meta img.avatar {
@@ -164,17 +181,18 @@ ul#ticker li div.reminder-meta img.avatar {
 ul#ticker li.odd div.reminder-meta {
 	text-align: right;
 	background: transparent url(../img/misc/speech-right.png) no-repeat 275px 0px;
-	padding: 0 30px 0 0;
+	padding: 0 33px 0 0;
 }
 
 /* Web interface */
 div#reminders ul {
-	margin-top: 1em;
+	margin: 1em 0;
+	  	border-bottom-width: 1px solid #f4f4f4;
 }
 div#reminders li {
-  	padding: 0 0 0.7em 0;
-  	margin: 0 0 0.7em 0;
-  	border-bottom: 1px solid #f4f4f4;
+  	padding: 0.5em 0;
+  	margin: 0;
+  	border-top: 1px solid #f4f4f4;
   	clear: both;
 }
 div#reminders li a.remove {
@@ -182,8 +200,8 @@ div#reminders li a.remove {
 	width: 14px;
 	height: 14px;
 	display: block;
-	float: left;
-	margin: 0.5em 1em 0 0;
+	float: right;
+	margin: 0.5em 0 0 1em;
 }
 div#reminders li a.remove:hover {
 	background: transparent url(../img/buttons/remove.gif) no-repeat -14px 0px;
@@ -191,6 +209,7 @@ div#reminders li a.remove:hover {
 div#reminders li div.reminder-data {
 	float: left;
 	width: 400px;
+	font-weight: bold;
 }
 div#reminders li div.reminder-meta {
   	color: #999;
@@ -199,10 +218,16 @@ div#reminders li div.reminder-meta {
 
 div#reminder-web-form {
 	background: transparent url(../img/misc/speech-left.png) no-repeat 10px 0px;
-	padding: 5px 0 0 30px;	
+	padding: 10px 0 0 35px;	
 }
-div#reminder-web-form input.large-input {
-	width: 150px;
+div#reminder-web-form textarea.large-input {
+	width: 250px;
+	height: 75px;
+	padding: 5px;
+	font-size: 1.15em;
+}
+div#reminder-web-form input.button {
+	float: right;
 }
 div.speech {
 	background: #fffab1;
@@ -212,14 +237,14 @@ div.speech {
 
 /* Sidebars */
 div#reminder-settings {
-	font-size: 0.75em;
-	margin: 15px 0 0 0;
-	padding: 0 0 0 30px;
+	font-size: 0.9em;
+	margin: 4em 0 0 0;
+	padding: 0 0 0 35px;
 	color: #333;
 }
 div#ticker-container, div#reminder-web-input {
 	position: absolute;
-	top: -4em;
+	top: -5em;
 	right: 0px;
 	background: #ffffff;
 	-webkit-border-radius: 5px;
@@ -234,20 +259,22 @@ input.large-input {
 }
 
 /* Footer */
-div#footer {
-	margin: 30px 0;
+div#footer-container {
+	margin: 0;
 	font-size: 0.7em;
 	color: #999;
+	border-top: 2px solid #AAA;
+	padding: 20px 0;
 }
-div#footer a {
+div#footer-container a {
 	color: #000000;
 }
-
 
 /* Positioning */
 .center {
 	text-align: left;
 	width: 960px;
+	padding: 0px 20px;
 	margin: 0 auto;
 }
 .left {

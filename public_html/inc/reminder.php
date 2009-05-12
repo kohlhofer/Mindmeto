@@ -29,6 +29,40 @@
 			return false;
 			
 		}
+		
+		function fetchLatestPublicHTML( $id = false ) {
+			
+			$latestPublicReminders = $this->fetchLatestPublic( $id );
+			$publicRemindersHTML = "";
+
+			if( $latestPublicReminders ) {
+
+				$i = 0;
+
+				while( $publicReminder = $latestPublicReminders->getRow() ) {
+
+					$twitterData = unserialize( $publicReminder['user_twitter_data'] );
+					$publicRemindersHTML .= '<li';
+
+					if( $i % 2 != 0 ) $publicRemindersHTML .= ' class="odd"';
+
+					$publicRemindersHTML .= '><div class="reminder">'.	
+												'<b>@mindmeto</b> '.$publicReminder['reminder_full_text'].
+											'</div>'.
+											'<div class="reminder-meta">'.
+												'<a href="http://twitter.com/'.$twitterData->screen_name.'"><img src="'.$twitterData->profile_image_url.'" class="avatar" alt="'.$twitterData->screen_name.'"  /> '.$twitterData->screen_name.'</a>'.
+											'</div>'.
+										'</li>';
+
+					$i = ( $i ) ? 0 : 1;
+
+				}
+
+			}
+			
+			return $publicRemindersHTML;
+			
+		}
 	    
 		// Passing a tweetId of value -1 means we're adding the reminder via the web interface
 		function add( $userId, $tweetId, $text, $fulltext, $timestamp, $public = 0 ) {

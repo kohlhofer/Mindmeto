@@ -129,7 +129,7 @@
 			
 		}
 		
-		function parseCommand( $userId, $command ) {
+		function parseCommand( $type, $userId, $command ) {
 			
 			global $db;
 			
@@ -204,7 +204,11 @@
 			} else if( $command == "confirmations off" ) {
 				
 				$this->updateUserSettings( $userId, 'user_allow_confirmations', 0 );
-				return("All done! You have now turned Direct Message confirmations off (this will be your last one).");
+				if( $type == "web" ) {
+					return("All done! You have now turned Direct Message confirmations off.");
+				} else {
+					return("All done! You have now turned Direct Message confirmations off (this will be your last one).");				
+				}
 
 			} else if( $command == "reminders on" ) {
 				
@@ -244,7 +248,11 @@
 				
 					$convertedTimestamp = convertDefaultTime( $userId, $reminderData['epoch'] );
 					$reminderData['epoch'] = ( $convertedTimestamp !== false ) ? $convertedTimestamp : $reminderData['epoch'];
-					return( "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']). " | See other reminders at http://mindmeto.com/list.php" );
+					if( $type == "web" ) {
+						return( "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']) );
+					} else {
+						return( "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']). " | See other reminders at http://mindmeto.com/list.php" );					
+					}
 			
 				} else {
 					
@@ -286,7 +294,7 @@
 					}
 				
 					$userId = ($type == "dm") ? trim($update->sender_id) : trim($update->user->id);
-					if( $type == "dm" ) $commandResponse = $this->parseCommand( $userId, $update->text );
+					if( $type == "dm" ) $commandResponse = $this->parseCommand( $type, $userId, $update->text );
 
 					// Handle configuration commands
 					if( $type == "dm" && $commandResponse !== false ) {

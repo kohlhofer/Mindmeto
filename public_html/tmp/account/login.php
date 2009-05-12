@@ -10,11 +10,7 @@
 			
 		    <div id="login">
 		        <p>
-		            When you click the button below you will be sent to Twitter.com and asked to grant mindmeto.com access to your account.
-		        </p>
-		        <p>
-		            Once you do you will be re-directed to your list of reminders.<p>
-		        <p>
+		            Follow the link below to grant MindMeTo.com access on Twitter.com. Once you do so you will be re-directed to your list of reminders.</p>
 		            <a href="<?=$oAuthRequestLink?>">Sign in on Twitter.com</a> or
 		            <a href="index.html" title="Go back to the home page">cancel</a>.
 		        </p>    
