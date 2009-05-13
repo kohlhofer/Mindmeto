@@ -93,7 +93,7 @@ function convertDefaultTime( $userId, $timestamp ) {
 	
 		if( $result->numRows() > 0 ) {
 			$results = $result->getRow();
-			$defaultTime = $results['user_default_time'];
+			$defaultTime = intval($results['user_default_time']);
 		}
 		
 		return mktime($defaultTime, date("i", $timestamp), date("s", $timestamp), date("m", $timestamp), date("d", $timestamp), date("Y", $timestamp));
@@ -117,6 +117,14 @@ function cancelReminder( $userId, $id ) {
 	
 	return false;
 	
+}
+
+function autolinkUrls( $string ) {
+
+	$string = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $string);
+	$string = ereg_replace("@([[:alnum:]]+)","<a href=\"http://twitter.com/\\1\">@\\1</a>", $string);
+	
+	return $string;
 }
 
 ?>

@@ -3,7 +3,7 @@
 	define(MINDMETO_ROOT, '');
 	
 	require_once(MINDMETO_ROOT.'inc/session.php');
-	require_once(MINDMETO_ROOT.'inc/reminder.php');
+	require_once(MINDMETO_ROOT.'inc/twitter/bot.php');
 
 	$reminders = new Reminder();
 	$latestPublicReminders = $reminders->fetchLatestPublicHTML();

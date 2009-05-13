@@ -5,6 +5,6 @@
 	require_once(MINDMETO_ROOT.'inc/session.php');
 	$session->logout();
 	
-	header('Location: list.php');
+	header('Location: list');
 
 ?>

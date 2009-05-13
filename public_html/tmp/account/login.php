@@ -2,7 +2,7 @@
 
 	<div id="about">
 		<div id="about-inner" class="center">
-			<img src="public/img/logos/standard.png" alt="MindMeTo" />
+			<img src="http://mindmeto.com/public/img/logos/standard.png" alt="MindMeTo" />
 		</div>
 	</div>
 	<div id="content-container">
@@ -12,7 +12,7 @@
 		        <p>
 		            Follow the link below to grant MindMeTo.com access on Twitter.com. Once you do so you will be re-directed to your list of reminders.</p>
 		            <a href="<?=$oAuthRequestLink?>">Sign in on Twitter.com</a> or
-		            <a href="index.html" title="Go back to the home page">cancel</a>.
+		            <a href="http://mindmeto.com" title="Go back to the home page">cancel</a>.
 		        </p>    
 			</div>
 			

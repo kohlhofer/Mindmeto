@@ -59,6 +59,7 @@ div#content {
 	text-align: left;
 	position: relative;
 	min-height: 100px;
+	zoom: 1;
 }
 .left-column {
 	width: 590px;
@@ -102,7 +103,6 @@ div#how-to .note {
 /* Login */
 div#login {
 	margin: 1em auto 3em auto;
-	text-align: center;
 	font-size: 1.2em;
 	background-color: #EEE;
 	padding: 1em 2em;
@@ -178,6 +178,13 @@ ul#ticker li div.reminder-meta img.avatar {
 	padding: 2px;
 	background: #f4f4f4;
 }
+
+#no-public-reminders {
+  	font-size: 1.2em;
+  	color: #999;
+}
+
+
 ul#ticker li.odd div.reminder-meta {
 	text-align: right;
 	background: transparent url(../img/misc/speech-right.png) no-repeat 275px 0px;
@@ -186,13 +193,13 @@ ul#ticker li.odd div.reminder-meta {
 
 /* Web interface */
 div#reminders ul {
-	margin: 1em 0;
-	  	border-bottom-width: 1px solid #f4f4f4;
+	margin: 1em 0 4em 0;
+	  	border-bottom: 1px solid #DDD;
 }
 div#reminders li {
   	padding: 0.5em 0;
   	margin: 0;
-  	border-top: 1px solid #f4f4f4;
+  	border-top: 1px solid #DDD;
   	clear: both;
 }
 div#reminders li a.remove {
@@ -206,20 +213,26 @@ div#reminders li a.remove {
 div#reminders li a.remove:hover {
 	background: transparent url(../img/buttons/remove.gif) no-repeat -14px 0px;
 }
-div#reminders li div.reminder-data {
-	float: left;
-	width: 400px;
+div#reminders li span.reminder-data {
 	font-weight: bold;
+	font-size: 1.2em;
+	margin-right: 0.5em;
 }
-div#reminders li div.reminder-meta {
+div#reminders li span.reminder-meta {
   	color: #999;
-  	float: right;
+  	font-weight: 0.9em;
 }
 
 div#reminder-web-form {
 	background: transparent url(../img/misc/speech-left.png) no-repeat 10px 0px;
 	padding: 10px 0 0 35px;	
 }
+
+input.button {
+	font-size: 1.4em;  	
+}
+
+
 div#reminder-web-form textarea.large-input {
 	width: 250px;
 	height: 75px;
@@ -239,9 +252,14 @@ div.speech {
 div#reminder-settings {
 	font-size: 0.9em;
 	margin: 4em 0 0 0;
-	padding: 0 0 0 35px;
 	color: #333;
 }
+
+#reminder-web-result {
+	color: #333;  	
+}
+
+
 div#ticker-container, div#reminder-web-input {
 	position: absolute;
 	top: -5em;
@@ -249,6 +267,7 @@ div#ticker-container, div#reminder-web-input {
 	background: #ffffff;
 	-webkit-border-radius: 5px;
     -moz-border-radius: 5px;
+zoom:1;
 }
 
 /* Forms */
@@ -261,10 +280,16 @@ input.large-input {
 /* Footer */
 div#footer-container {
 	margin: 0;
-	font-size: 0.7em;
+	font-size: 0.9em;
 	color: #999;
 	border-top: 2px solid #AAA;
 	padding: 20px 0;
+}
+
+div#no-reminders {
+  	font-size: 1.3em;
+  	color: #999;
+  	padding: 3em 0 9em 0;
 }
 div#footer-container a {
 	color: #000000;

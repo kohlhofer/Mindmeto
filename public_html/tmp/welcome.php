@@ -2,7 +2,7 @@
 
 <div id="about">
 	<div id="about-inner" class="center">
-		<img src="public/img/logos/standard.png" alt="MindMeTo" />
+		<img src="http://mindmeto.com/public/img/logos/standard.png" alt="MindMeTo" />
 	</div>
 </div>
 
@@ -18,7 +18,7 @@
 						<span class="note">We will quickly follow you back.</span>
 					</li>
 					<li>
-						Add a reminder by tweeting: <strong>@mindmeto buy some milk tomorrow</strong>
+						Add a reminder by tweeting: <strong>@mindmeto buy some milk tomorrow</strong> or, for private reminders, DM: <strong>d mindmeto buy some milk tomorrow</strong>
 						<span class="note">This will add "Buy some milk" to tomorrow's schedule. (You can also add your reminder privately by sending a direct message.)</span>
 					</li>
 					<li>
@@ -30,9 +30,14 @@
 		</div>
 		<div id="ticker-container" class="right-column">
 
+			<?php if( strlen($latestPublicReminders) > 0 ) { ?>
 			<ul id="ticker">
 				<?=$latestPublicReminders?>
+				<li style="margin-top: 30px; text-align: center"><a href="http://search.twitter.com/search?q=mindmeto" title="See more public reminders">See more public reminders...</a></a>
 			</ul>
+			<?php } else { ?>
+			<div id="no-public-reminders">Uh oh! There are no public reminders, yet!</div>
+			<?php } ?>
 
 		</div>
 	</div>
@@ -43,7 +48,7 @@
 		<div class="left-column">
 
 			<div class="left" style="width: 256px; margin: 0 30px 0 0">
-				<h2>Easy to use and extremely flexible</h2>
+				<h2>Easy and extremely flexible</h2>
 				<ul>
 					<li>@mindmeto ... in two hours</li>
 					<li>@mindmeto ... on Tuesday</li>
@@ -55,7 +60,7 @@
 				</ul>
 			</div>
 			<div class="left" style="width: 256px">
-				<h2>Configure MindMeTo to work your way</h2>
+				<h2>Make MindMeTo work your way</h2>
 				<ul>
 					<li>d mindmeto timezone GMT+3 <span class="note">Sets your time zone to GMT+3. You can find out your timezone relative to GMT <a href="http://wwp.greenwichmeantime.com/">here</a>.</span></li>
 					<li>d mindmeto default time 8 <span class="note">Reminders without a specific time will be sent at 8am (use 24 hour values)</span></li>

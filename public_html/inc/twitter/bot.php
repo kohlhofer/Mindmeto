@@ -59,16 +59,21 @@
 				 "LEFT JOIN ".DB_TBL_USERS." AS u ON u.user_id = r.reminder_user_id ".
 				 "WHERE r.reminder_sent = 0 AND ((".
 					"(".
-						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' ".
+						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' AND r.reminder_context_flag != 'in' ".
 						"AND DATE_ADD( CONVERT_TZ( NOW(), '+00:00', IFNULL(u.user_timezone, '+00:00') ), INTERVAL ".REMINDER_PERIOD." MINUTE ) > r.reminder_timestamp ".
 					")".
-				") OR (".
+					") OR (".
 					"(".
-						"DATE_FORMAT( r.reminder_timestamp,  '%H:%i' ) = '00:00' ".
-						"AND DATE( r.reminder_timestamp ) <= DATE( CONVERT_TZ( NOW(), '+00:00', IFNULL( u.user_timezone, '+00:00' ) ) ) ".
-						"AND DATE_FORMAT( CONVERT_TZ( NOW() , '+00:00', IFNULL(u.user_timezone, '+00:00') ), '%H:%i' ) >= IFNULL( u.user_default_time, '8' ) + ':00' ".
+						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' AND r.reminder_context_flag = 'in' ".
+						"AND DATE_ADD( NOW(), INTERVAL ".REMINDER_PERIOD." MINUTE ) > r.reminder_timestamp ".
 					")".
-				"))".
+					") OR (".
+						"(".
+							"DATE_FORMAT( r.reminder_timestamp,  '%H:%i' ) = '00:00' ".
+							"AND DATE( r.reminder_timestamp ) <= DATE( CONVERT_TZ( NOW(), '+00:00', IFNULL( u.user_timezone, '+00:00' ) ) ) ".
+							"AND DATE_FORMAT( CONVERT_TZ( NOW() , '+00:00', IFNULL(u.user_timezone, '+00:00') ), '%H:%i' ) >= IFNULL( u.user_default_time, '8' ) + ':00' ".
+						")".
+					"))".
 				"ORDER BY CONVERT_TZ( r.reminder_timestamp, '+00:00', IFNULL(u.user_timezone, '+00:00') ) ASC";
 
 			$result = $db->query( trim($sql) );
@@ -144,7 +149,7 @@
 				if( is_numeric( $timezone ) ) {
 					
 					$dmTimezone = (intval($timezone) >= 0) ? '+'.$timezone : $timezone;
-					$finalTimezone = (intval($timezone) >= 0) ? '+'.$timezone.':00' : $timezone.':00';
+					$finalTimezone = (intval($timezone) >= 0) ? $timezone.':00' : $timezone.':00';
 				
 					$this->updateUserSettings( $userId, 'user_timezone', $finalTimezone );
 					return("All done! Your timezone has been set to GMT$dmTimezone" );
@@ -192,7 +197,7 @@
 				
 				} else {
 					
-					return("You must provide a numeric ID to delete a reminder. If you need to check a reminders ID, visit http://mindmeto.com/list.php");
+					return("You must provide a numeric ID to delete a reminder. If you need to check a reminders ID, visit http://mindmeto.com/list/");
 					
 				}
 
@@ -241,7 +246,7 @@
 				$reminderSetInFuture = ( $reminderData['epoch'] > time() ) ? true : false;
 				$public = ( $type == "replies" ) ? 1 : 0;
 		
-				if( $reminderSetInFuture && $this->reminder->add( $userId, $twitterId, $reminderData['reminder'], $command, $reminderData['epoch'], $public ) ) {
+				if( $reminderSetInFuture && $this->reminder->add( $userId, $twitterId, $reminderData['reminder'], $command, $reminderData['flag'], $reminderData['epoch'], $public ) ) {
 			
 					// Send a successful DM!
 					$reminderId = $db->fetchLastInsertId();
@@ -251,7 +256,7 @@
 					if( $type == "web" ) {
 						return( "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']) );
 					} else {
-						return( "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']). " | See other reminders at http://mindmeto.com/list.php" );					
+						return( "Done! Your reminder (ID #$reminderId) has been set for ".date('l jS \of F Y h:i:s A', $reminderData['epoch']). " | See other reminders at http://mindmeto.com/list/" );					
 					}
 			
 				} else {

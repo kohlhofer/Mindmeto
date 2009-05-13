@@ -19,9 +19,9 @@
 			$id = (isset($id) && is_numeric($id)) ? intval($id) : false;
 			
 			if( $id !== false ) {
-				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE r.reminder_sent = 0 AND u.user_id = r.reminder_user_id AND r.reminder_id > ".$db->sanitize($id)." ORDER BY r.reminder_added_timestamp DESC LIMIT 10");
+				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE r.reminder_public = 1 AND  u.user_id = r.reminder_user_id AND r.reminder_id > ".$db->sanitize($id)." ORDER BY r.reminder_added_timestamp DESC LIMIT 8");
 			} else {
-				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE r.reminder_sent = 0 AND u.user_id = r.reminder_user_id ORDER BY r.reminder_added_timestamp DESC LIMIT 10");
+				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE r.reminder_public = 1 AND u.user_id = r.reminder_user_id ORDER BY r.reminder_added_timestamp DESC LIMIT 8");
 			}
 			
 			if( $results->numRows() > 0 ) return $results;
@@ -47,7 +47,7 @@
 					if( $i % 2 != 0 ) $publicRemindersHTML .= ' class="odd"';
 
 					$publicRemindersHTML .= '><div class="reminder">'.	
-												'<b>@mindmeto</b> '.$publicReminder['reminder_full_text'].
+												'<b>@mindmeto</b> '.autolinkUrls($publicReminder['reminder_full_text']).
 											'</div>'.
 											'<div class="reminder-meta">'.
 												'<a href="http://twitter.com/'.$twitterData->screen_name.'"><img src="'.$twitterData->profile_image_url.'" class="avatar" alt="'.$twitterData->screen_name.'"  /> '.$twitterData->screen_name.'</a>'.
@@ -65,14 +65,14 @@
 		}
 	    
 		// Passing a tweetId of value -1 means we're adding the reminder via the web interface
-		function add( $userId, $tweetId, $text, $fulltext, $timestamp, $public = 0 ) {
+		function add( $userId, $tweetId, $text, $fulltext, $context, $timestamp, $public = 0 ) {
 			
 			global $db;
 			
 			if( $tweetId > -1 ) $result = $db->query("SELECT reminder_id FROM ".DB_TBL_REMINDERS." WHERE reminder_tweet_id='".$db->sanitize($tweetId)."'");
 			if( $tweetId == -1 || $result->numRows() < 1 ) {
 			
-				$db->query("INSERT INTO ".DB_TBL_REMINDERS." (reminder_id, reminder_user_id, reminder_tweet_id, reminder_text, reminder_full_text, reminder_timestamp, reminder_added_timestamp, reminder_public ) VALUES ('', '".$db->sanitize($userId)."', '".$db->sanitize($tweetId)."', '".$db->sanitize($text)."', '".$db->sanitize($fulltext)."', '".$db->sanitize(date('Y-m-d H:i:s', $timestamp))."', NOW(), '".$db->sanitize($public)."' )");
+				$db->query("INSERT INTO ".DB_TBL_REMINDERS." (reminder_id, reminder_user_id, reminder_tweet_id, reminder_text, reminder_full_text, reminder_context_flag, reminder_timestamp, reminder_added_timestamp, reminder_public ) VALUES ('', '".$db->sanitize($userId)."', '".$db->sanitize($tweetId)."', '".$db->sanitize($text)."', '".$db->sanitize($fulltext)."', '".$db->sanitize($context)."', '".$db->sanitize(date('Y-m-d H:i:s', $timestamp))."', NOW(), '".$db->sanitize($public)."' )");
 				return true;
 				
 			}
@@ -99,6 +99,12 @@
 			$contextFlags = array('in', 'on', 'by', 'next', 'every', 'tomorrow', 'at');
 			$possibleDates = array();
 			$i = 0;
+			
+			$query = trim($query);
+			$lastCharacter = substr( $query, strlen($query) - 1, strlen($query) );
+			if( $lastCharacter == "." || $lastCharacter == "!" || $lastCharacter == "?" ) {
+				$query = substr( $query, 0, strlen($query) - 1);
+			}
 			
 			foreach( $contextFlags as $flag ) {
 				
