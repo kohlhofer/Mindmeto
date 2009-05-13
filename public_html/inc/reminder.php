@@ -101,10 +101,7 @@
 			$i = 0;
 			
 			$query = trim($query);
-			$lastCharacter = substr( $query, strlen($query) - 1, strlen($query) );
-			if( $lastCharacter == "." || $lastCharacter == "!" || $lastCharacter == "?" ) {
-				$query = substr( $query, 0, strlen($query) - 1);
-			}
+			$query = rtrim( $query, "@.!?;:-=*&^%£@+ ()" );
 			
 			foreach( $contextFlags as $flag ) {
 				
