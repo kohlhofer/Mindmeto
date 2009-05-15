@@ -19,9 +19,9 @@
 			$id = (isset($id) && is_numeric($id)) ? intval($id) : false;
 			
 			if( $id !== false ) {
-				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE r.reminder_public = 1 AND  u.user_id = r.reminder_user_id AND r.reminder_id > ".$db->sanitize($id)." ORDER BY r.reminder_added_timestamp DESC LIMIT 8");
+				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE r.reminder_public = 1 AND  u.user_id = r.reminder_user_id AND r.reminder_id > ".$db->sanitize($id)." ORDER BY r.reminder_added_timestamp DESC LIMIT 6");
 			} else {
-				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE r.reminder_public = 1 AND u.user_id = r.reminder_user_id ORDER BY r.reminder_added_timestamp DESC LIMIT 8");
+				$results = $db->query("SELECT r.reminder_id, r.reminder_full_text, u.user_twitter_data FROM ".DB_TBL_REMINDERS." AS r, ".DB_TBL_USERS." AS u WHERE r.reminder_public = 1 AND u.user_id = r.reminder_user_id ORDER BY r.reminder_added_timestamp DESC LIMIT 6");
 			}
 			
 			if( $results->numRows() > 0 ) return $results;
@@ -112,8 +112,8 @@
 				
 				if( $pos !== false ) {
 					$newDate = substr( $query, $pos, strlen($query));
-					$newDate = trim(str_replace( array(' at ', ' by ', ' and ', ' an ', ' in ', ' on ', ' one ', ' two ', ' three ', ' four ', ' five ', ' six ', ' seven ', ' eight ', ' nine ', ' ten ', ' twelve '), 
-												 array(' ', ' ', ' ', ' 1 ', ' ',' ', ' 1 ', ' 2 ', ' 3 ', ' 4 ', ' 5 ', ' 6 ', ' 7 ', ' 8 ', ' 9 ', ' 10 ', ' 11 ', ' 12 '), 
+					$newDate = trim(str_replace( array(' the ', ' at ', ' by ', ' and ', ' an ', ' in ', ' on ', ' one ', ' two ', ' three ', ' four ', ' five ', ' six ', ' seven ', ' eight ', ' nine ', ' ten ', ' twelve '), 
+												 array(' ', ' ', ' ', ' ', ' 1 ', ' ',' ', ' 1 ', ' 2 ', ' 3 ', ' 4 ', ' 5 ', ' 6 ', ' 7 ', ' 8 ', ' 9 ', ' 10 ', ' 11 ', ' 12 '), 
 												 $newDate));
 					$epoch = strtotime( $newDate );
 					

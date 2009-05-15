@@ -19,10 +19,10 @@
 					</li>
 					<li>
 						Add a reminder by tweeting: <strong>@mindmeto buy some milk tomorrow</strong> or, for private reminders, DM: <strong>d mindmeto buy some milk tomorrow</strong>
-						<span class="note">This will add "Buy some milk" to tomorrow's schedule. (You can also add your reminder privately by sending a direct message.)</span>
+						<span class="note">This will add "Buy some milk" to tomorrow's schedule.</span>
 					</li>
 					<li>
-						At the scheduled time we will send you a private direct message to "buy some milk".
+						Then, at the scheduled time, we'll send you a private direct message to "buy some milk".
 					</li>
 				</ol>
 			</div>

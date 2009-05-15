@@ -51,28 +51,23 @@
 			
 			global $db;
 
-			// Remove reminders older than a day
-			$result = $db->query("SELECT reminder_id FROM ".DB_TBL_REMINDERS." WHERE reminder_timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY)");
+			// Remove reminders older than a day (that have failed to send)
+			$result = $db->query("DELETE FROM ".DB_TBL_REMINDERS." WHERE reminder_timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY) AND reminder_sent=0");
 								
 			$sql = "SELECT r.* , u.user_timezone, u.user_default_time, u.user_id ".
 				 "FROM ".DB_TBL_REMINDERS." AS r ".
 				 "LEFT JOIN ".DB_TBL_USERS." AS u ON u.user_id = r.reminder_user_id ".
-				 "WHERE r.reminder_sent = 0 AND ((".
+				 "WHERE r.reminder_sent = 0 AND (".
 					"(".
 						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' AND r.reminder_context_flag != 'in' ".
 						"AND DATE_ADD( CONVERT_TZ( NOW(), '+00:00', IFNULL(u.user_timezone, '+00:00') ), INTERVAL ".REMINDER_PERIOD." MINUTE ) > r.reminder_timestamp ".
-					")".
 					") OR (".
-					"(".
 						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' AND r.reminder_context_flag = 'in' ".
 						"AND DATE_ADD( NOW(), INTERVAL ".REMINDER_PERIOD." MINUTE ) > r.reminder_timestamp ".
-					")".
 					") OR (".
-						"(".
-							"DATE_FORMAT( r.reminder_timestamp,  '%H:%i' ) = '00:00' ".
-							"AND DATE( r.reminder_timestamp ) <= DATE( CONVERT_TZ( NOW(), '+00:00', IFNULL( u.user_timezone, '+00:00' ) ) ) ".
-							"AND DATE_FORMAT( CONVERT_TZ( NOW() , '+00:00', IFNULL(u.user_timezone, '+00:00') ), '%H:%i' ) >= IFNULL( u.user_default_time, '8' ) + ':00' ".
-						")".
+						"DATE_FORMAT( r.reminder_timestamp,  '%H:%i' ) = '00:00' ".
+						"AND DATE( r.reminder_timestamp ) <= DATE( CONVERT_TZ( NOW(), '+00:00', IFNULL( u.user_timezone, '+00:00' ) ) ) ".
+						"AND DATE_FORMAT( CONVERT_TZ( NOW() , '+00:00', IFNULL(u.user_timezone, '+00:00') ), '%H:%i' ) >= IFNULL( u.user_default_time, '8' ) + ':00' ".
 					"))".
 				"ORDER BY CONVERT_TZ( r.reminder_timestamp, '+00:00', IFNULL(u.user_timezone, '+00:00') ) ASC";
 
@@ -80,7 +75,7 @@
 
 			while( $reminder = $result->getRow() ) {
 
-				$reminderText = $reminder['reminder_text'].' | See all reminders: http://mindmeto.com/list.php';
+				$reminderText = $reminder['reminder_text'].' | See all reminders: http://mindmeto.com/list';
 				if( $this->sendDM( $reminder['reminder_user_id'], $reminderText, TWITTER_DM_REMINDER ) ) {
 					
 					$db->query("UPDATE ".DB_TBL_REMINDERS." SET reminder_sent=1 WHERE reminder_id='".$db->sanitize($reminder['reminder_id'])."'");
@@ -143,23 +138,31 @@
 			
 			if( substr( $command, 0, 12) == "timezone gmt" ) {	
 				
-				$timezone = trim(substr( $command, 12, strlen($command) ));
-				
-				if( trim($command) == "timezone gmt" ) $timezone = 0;
-				if( is_numeric( $timezone ) ) {
-					
-					$dmTimezone = (intval($timezone) >= 0) ? '+'.$timezone : $timezone;
-					$finalTimezone = (intval($timezone) >= 0) ? $timezone.':00' : $timezone.':00';
-				
-					$this->updateUserSettings( $userId, 'user_timezone', $finalTimezone );
-					return("All done! Your timezone has been set to GMT$dmTimezone" );
-					
-				} else {
-					
-					return("Whoops! You must provide a numeric value (number of hours relative to GMT) to set a timezone." );
-					
-				}
+				$offset = trim(substr( $command, 12, 1 ) );
+				if( $offset == "+" || $offset == "-" || trim($command) == "timezone gmt" ) {
 
+					if( trim($command) == "timezone gmt" ) {
+						$timezone = 0;	
+						$offset = "+";		
+					} else {
+						$timezone = trim(substr( $command, 13, strlen($command) ));
+					}
+					
+					if( is_numeric( $timezone ) ) {
+
+						$dmTimezone = ( $offset == "+" ) ? '+'.$timezone : '-'.$timezone;
+						$finalTimezoneHour = ( (intval($timezone) >= 0 && intval($timezone) <= 9) ) ? '0'.$timezone : $timezone;
+						$finalTimezone = ( $offset == "+" ) ? '+'.$finalTimezoneHour.':00' : '-'.$finalTimezoneHour.':00';
+
+						$this->updateUserSettings( $userId, 'user_timezone', $finalTimezone );
+						return("All done! Your timezone has been set to GMT$dmTimezone" );
+						
+					}
+	
+				}
+				
+				return("Whoops! You must provide a numeric value (number of hours relative to GMT) to set a timezone." );
+				
 			} else if( substr( $command, 0, 12) == "default time" ) {
 				
 				$defaultTime = trim(substr($command, 13, strlen($command)));
@@ -177,7 +180,7 @@
 
 			} else if( $command == "list reminders" ) {
 				
-				return("Visit http://mindmeto.com/list.php to view your reminders.");
+				return("Visit http://mindmeto.com/list/ to view your reminders.");
 
 			} else if( substr( $command, 0, 8) == "cancel #" ) {
 				
@@ -348,7 +351,11 @@
 	
 			} catch ( Exception $e ) {
 				
-				die("There was a problem grabbing MindMeTo's @replies (".$e->getMessage().")");
+				if( strlen($e->getMessage()) > 0 ) {
+					die("There was a problem grabbing MindMeTo's @replies (".$e->getMessage().")");
+				} else {
+					die();
+				} 
 				
 			}
 			
@@ -379,8 +386,12 @@
 				$updates = $this->twitterOAuth->OAuthRequest('https://twitter.com/direct_messages.json', $data, 'GET');
 	
 			} catch ( Exception $e ) {
-				
-				die("There was a problem grabbing MindMeTo's DMs (".$e->getMessage().")");
+
+				if( strlen($e->getMessage()) > 0 ) {
+					die("There was a problem grabbing MindMeTo's DMs (".$e->getMessage().")");
+				} else {
+					die();
+				}
 				
 			}
 			
