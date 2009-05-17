@@ -3,6 +3,17 @@
 	class Reminder {
 		
 		function Reminder() {}
+		function calculateLocalTime( $timezone ) {
+			
+			global $db;
+			
+			$timezone = $db->sanitize($timezone);
+			
+			$curTime = $db->query("SELECT CONVERT_TZ( NOW(), '+00:00', IFNULL('".$timezone."', '+00:00')) AS currentTime");
+			$curTime = $curTime->getRow();
+			return $curTime['currentTime'];
+			
+		}
 		function fetch( $userId ) {
 			
 			global $db;
@@ -96,7 +107,7 @@
 		*/
 		function findDateContext( $query ) {
 
-			$contextFlags = array('in', 'on', 'by', 'next', 'every', 'tomorrow', 'at');
+			$contextFlags = array('in', 'on', 'by', 'next', 'tomorrow', 'at');
 			$possibleDates = array();
 			$i = 0;
 			
@@ -112,8 +123,8 @@
 				
 				if( $pos !== false ) {
 					$newDate = substr( $query, $pos, strlen($query));
-					$newDate = trim(str_replace( array(' the ', ' at ', ' by ', ' and ', ' an ', ' in ', ' on ', ' one ', ' two ', ' three ', ' four ', ' five ', ' six ', ' seven ', ' eight ', ' nine ', ' ten ', ' twelve '), 
-												 array(' ', ' ', ' ', ' ', ' 1 ', ' ',' ', ' 1 ', ' 2 ', ' 3 ', ' 4 ', ' 5 ', ' 6 ', ' 7 ', ' 8 ', ' 9 ', ' 10 ', ' 11 ', ' 12 '), 
+					$newDate = trim(str_replace( array('hr', 'hrs', 'midday', 'afternoon', ' the ', ' at ', ' by ', ' and ', ' an ', ' in ', ' on ', ' one ', ' two ', ' three ', ' four ', ' five ', ' six ', ' seven ', ' eight ', ' nine ', ' ten ', ' twelve '), 
+												 array('hour', 'hours', '12pm', '3pm', ' ', ' ', ' ', ' ', ' 1 ', ' ',' ', ' 1 ', ' 2 ', ' 3 ', ' 4 ', ' 5 ', ' 6 ', ' 7 ', ' 8 ', ' 9 ', ' 10 ', ' 11 ', ' 12 '), 
 												 $newDate));
 					$epoch = strtotime( $newDate );
 					

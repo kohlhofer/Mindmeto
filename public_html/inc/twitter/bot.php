@@ -53,21 +53,18 @@
 
 			// Remove reminders older than a day (that have failed to send)
 			$result = $db->query("DELETE FROM ".DB_TBL_REMINDERS." WHERE reminder_timestamp < DATE_SUB(NOW(), INTERVAL 1 DAY) AND reminder_sent=0");
-								
+	
 			$sql = "SELECT r.* , u.user_timezone, u.user_default_time, u.user_id ".
 				 "FROM ".DB_TBL_REMINDERS." AS r ".
 				 "LEFT JOIN ".DB_TBL_USERS." AS u ON u.user_id = r.reminder_user_id ".
 				 "WHERE r.reminder_sent = 0 AND (".
 					"(".
-						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' AND r.reminder_context_flag != 'in' ".
+						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' ".
 						"AND DATE_ADD( CONVERT_TZ( NOW(), '+00:00', IFNULL(u.user_timezone, '+00:00') ), INTERVAL ".REMINDER_PERIOD." MINUTE ) > r.reminder_timestamp ".
-					") OR (".
-						"DATE_FORMAT( r.reminder_timestamp, '%H:%i' ) != '00:00' AND r.reminder_context_flag = 'in' ".
-						"AND DATE_ADD( NOW(), INTERVAL ".REMINDER_PERIOD." MINUTE ) > r.reminder_timestamp ".
 					") OR (".
 						"DATE_FORMAT( r.reminder_timestamp,  '%H:%i' ) = '00:00' ".
 						"AND DATE( r.reminder_timestamp ) <= DATE( CONVERT_TZ( NOW(), '+00:00', IFNULL( u.user_timezone, '+00:00' ) ) ) ".
-						"AND DATE_FORMAT( CONVERT_TZ( NOW() , '+00:00', IFNULL(u.user_timezone, '+00:00') ), '%H:%i' ) >= IFNULL( u.user_default_time, '8' ) + ':00' ".
+						"AND DATE_FORMAT( CONVERT_TZ( NOW() , '+00:00', IFNULL(u.user_timezone, '+00:00') ), '%H' ) >= IFNULL( u.user_default_time, '08' )".
 					"))".
 				"ORDER BY CONVERT_TZ( r.reminder_timestamp, '+00:00', IFNULL(u.user_timezone, '+00:00') ) ASC";
 
@@ -244,9 +241,17 @@
 			$reminderData = $this->reminder->parse( $command );
 	
 			if( is_array($reminderData) ) {
-		
+
+				$result = $db->query("SELECT IFNULL(user_timezone, '+00:00') AS timezone FROM ".DB_TBL_USERS." WHERE user_id='".$db->sanitize($userId)."' LIMIT 1");
+				$results = $result->getRow();
+				
+				// For relative times, we add the timezone to the timestamp
+				if( trim($reminderData['flag']) === "in" ) {
+					$reminderData['epoch'] = strtotime( substr( $results['timezone'], 0, stripos($results['timezone'], ":"))." hour", $reminderData['epoch']);
+				}
+				
 				// Make sure the user isn't setting a reminder in the past
-				$reminderSetInFuture = ( $reminderData['epoch'] > time() ) ? true : false;
+				$reminderSetInFuture = ( $reminderData['epoch'] > strtotime( substr( $results['timezone'], 0, stripos($results['timezone'], ":"))." hour 5 minutes", time() )) ? true : false;
 				$public = ( $type == "replies" ) ? 1 : 0;
 		
 				if( $reminderSetInFuture && $this->reminder->add( $userId, $twitterId, $reminderData['reminder'], $command, $reminderData['flag'], $reminderData['epoch'], $public ) ) {
@@ -264,7 +269,11 @@
 			
 				} else {
 					
-					return( "Whoops! There was a problem setting your reminder. If this problem persists, please get in touch!" );
+					if( !$reminderSetInFuture ) {
+						return ( "Sorry, you can't set a reminder for the past (or less than five minutes into the future). It'd create a time paradox!" );
+					} else {
+						return( "Whoops! There was a problem setting your reminder. If this problem persists, please get in touch!" );
+					}
 					
 				}
 				
@@ -441,6 +450,7 @@
 				
 				if( $removeEmail === true ) {
 					
+					$this->sendDM( trim($rawHeader['X-Twittersenderid']), "Hi. Please send me a direct message with your local time zone, e.g: \"timezone GMT+2\". You can find  more commands at http://mindmeto.com" );
 					@imap_delete($imapConnection, $i); 
 					
 				}

@@ -17,6 +17,7 @@
 			});
 		</script>
 JS;
+	$title = "a way of remembering with Twitter";
 	
 	include(MINDMETO_ROOT.'tmp/welcome.php');
 

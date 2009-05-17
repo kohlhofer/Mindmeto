@@ -45,6 +45,7 @@ if( $session->loggedIn ) {
 	}
 
 	$existingReminders = $reminders->fetch( $session->userId );
+	$curTime = $reminders->calculateLocalTime($session->userDetails['user_timezone']);
 	
 	$headerCode = <<<JS
 			<script>
@@ -59,6 +60,7 @@ if( $session->loggedIn ) {
 				});
 			</script>
 JS;
+	$title = "your reminders";
 	
 	include( 'tmp/account/reminders.php' );
 	

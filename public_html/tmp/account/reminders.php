@@ -17,6 +17,9 @@
 					echo $queryResult;
 					echo '</div>';
 				}
+				
+				echo 'Your timezone is currently set to GMT<b>'.substr( $session->userDetails['user_timezone'], 0, stripos($session->userDetails['user_timezone'], ":")).'</b> ('.date('jS M \a\t g:iA', strtotime($curTime)).')<br />';
+				
 				if( isset( $existingReminders ) && $existingReminders->numRows() > 0 ) {
 
 					echo '<ul>';
@@ -61,10 +64,9 @@
 
 			<div id="reminder-settings">
 				<b>Any reminders you set in the web interface will be kept private</b><br /><br />
-				Your timezone is currently set to GMT<b><?=substr( $session->userDetails['user_timezone'], 0, stripos($session->userDetails['user_timezone'], ":"))?></b><br />
 				Reminders without a time set will arrive at <b><?=$session->userDetails['user_default_time']?><?php if( $session->userDetails['user_default_time'] > 12 ) { echo 'PM'; } else { echo 'AM'; }?></b><br />
 				<?php echo ( $session->userDetails['user_allow_reminders'] ) ? "Direct Message reminder messages are <b>ON</b>" : "Direct Message reminder messages are <b>OFF</b>"; ?><br />
-				<?php echo ( $session->userDetails['user_allow_confirmations'] ) ? "Direct Message confirmation messages are <b>ON</b>" : "Direct Message reminder messages are <b>OFF</b>"; ?>
+				<?php echo ( $session->userDetails['user_allow_confirmations'] ) ? "Direct Message confirmation messages are <b>ON</b>" : "Direct Message confirmation messages are <b>OFF</b>"; ?>
 			</div>
 
 		</div>
